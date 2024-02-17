@@ -10,30 +10,42 @@
 // #include <WinUser.h>
 
 #pragma comment(lib, "Ws2_32.lib")
-const char* configFilePath = "../murphpad_kanata.kbd";
+const TCHAR* configFilePath = "../murphpad_kanata.kbd";
 
 #define MAX_LAYERS 25
 #define MAX_LAYER_NAME_LENGTH 64
 #define MAX_CONFIG_FILE_LINE_LENGTH 256
 
-const char* layerStartStr = "(deflayer ";
-char layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
+const TCHAR* layerStartStr = "(deflayer ";
+TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
 int layerCount = 0;
-const char* hostname = "localhost";
-const char* port = "1337";
+const TCHAR* hostname = "localhost";
+const TCHAR* port = "1337";
 
-int getLayerNames(const char* configPath) {
+static BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
+  int length = GetWindowTextLength(hWnd);
+  TCHAR* buff = malloc(length);
+  
+
+  free(buff);
+  return 0;
+}
+
+int getWindowHwnd(const TCHAR* windowTitle, HWND* hWnd) {
+  EnumWindows(enumWindowCallback, NULL);
+}
+
+int getLayerNames(const TCHAR* configPath) {
   FILE *fptr;
   fopen_s(&fptr, configPath, "r");
-  char buf[MAX_CONFIG_FILE_LINE_LENGTH];
+  TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
   int layerNum = 0;
   while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
-    char* pos = strstr(buf, layerStartStr);
+    TCHAR* pos = strstr(buf, layerStartStr);
     // Check that:
     // 1: layerStartStr is found
     // 2. The line continues past layerStartStr (add 1 to account for newline)
     if (pos && strlen(buf) > strlen(layerStartStr) + 1) {
-      printf("%s\n", buf);
       int layerNameLength = strlen(buf) - strlen(layerStartStr);
       for (int charIndex = 0; charIndex < min(layerNameLength, MAX_LAYER_NAME_LENGTH); ++charIndex) {
         layerNames[layerNum][charIndex] = buf[strlen(layerStartStr)+charIndex];
@@ -89,12 +101,17 @@ int getForegroundWindowInfo(HWND* foregroundWindow, TCHAR** processName, TCHAR**
   CloseHandle(hProc);
   // ** Get part of process name after last backslash
   // This pointer math is IFFY, hope it's right lol
-  TCHAR* procStart = strrchr(processPath, '\\') + 1;
+  TCHAR* procStart = processPath;
+  TCHAR* backslashPos = strrchr(processPath, '\\');
+  if (backslashPos) {
+    procStart = backslashPos + 1; // Add one to omit the slash
+  }
   TCHAR* procEnd = strstr(processPath, ".exe");
   int end = strlen(procStart);
-  if (procEnd) {
-    end = procEnd-procStart;
+  if (strstr(processPath, ".exe")) {
+    end -= 4;
   }
+
   for (int charIndex = 0; charIndex < min(end, BUFFER_LEN-1); ++ charIndex) {
     (*processName)[charIndex] = *(procStart + charIndex);
   }
@@ -104,7 +121,7 @@ int getForegroundWindowInfo(HWND* foregroundWindow, TCHAR** processName, TCHAR**
   return returnCode;
 }
 
-int initTcp(char* host, char* port, SOCKET* ConnectSocket) {
+int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
   int iResult;
   WSADATA wsaData;
   iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -152,12 +169,13 @@ int initTcp(char* host, char* port, SOCKET* ConnectSocket) {
   }
 
 
+  printf("TCP connection successful.\n");
   return 0;
 }
 
-int sendTCP(SOCKET sock, char* msg) {
+int sendTCP(SOCKET sock, TCHAR* msg) {
   printf("Sending: '%s'\n", msg);
-  // char* msg = "hello world";
+  // TCHAR* msg = "hello world";
   int iResult = send(sock, msg, (int)strlen(msg), 0);
   // int iResult = WSAGetLastError();
   if (iResult == SOCKET_ERROR) {
@@ -187,34 +205,39 @@ const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 
 void loop() {
   SOCKET kanataSocket;
-  initTcp(hostname, port, &kanataSocket);
-  sendTCP(kanataSocket, "{\"ChangeLayer\":{\"new\":\"WindowsTerminal\"}}");
-  sendTCP(kanataSocket, "{\"ChangeLayer\":{\"new\":\"capslock\"}}");
-  sendTCP(kanataSocket, "{\"ChangeLayer\":{\"new\":\"default\"}}");
+  int iResult = initTcp(hostname, port, &kanataSocket);
+  if (iResult == SOCKET_ERROR) {
+    printf("TCP connection failed.\n");
+    return;
+  }
 
   HWND fg;
   TCHAR* procName = malloc(maxProcNameLen);
   TCHAR* winTitle = malloc(maxWinTitleLen);
   TCHAR* prevProcName = malloc(maxProcNameLen);
   TCHAR* prevWinTitle = malloc(maxWinTitleLen);
-  int iResult = 0;
   TCHAR* buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
   while(TRUE) {
     if (getForegroundWindowInfo(&fg, &procName, &winTitle) && (strcmp(winTitle, prevWinTitle) != 0)) {
-      printf("ID: '%d',\tTitle: '%s',\tProc: '%s'\n",(int) fg, winTitle, procName);
+      printf("HWND: '%p',\tTitle: '%s',\tProc: '%s'\n", fg, winTitle, procName);
       sprintf_s(buf, MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE), LAYER_CHANGE_TEMPLATE, procName);
       iResult = sendTCP(kanataSocket, buf);
-      if (iResult == SOCKET_ERROR) {
-        printf("Socket error. Attempting to reconnect");
+      if (iResult) {
+        printf("Socket error. Attempting to reconnect.\n");
         initTcp("localhost", "1337", &kanataSocket);
       }
       strcpy_s(prevWinTitle, maxWinTitleLen, winTitle);
     }
-    Sleep(1000);
+    // Sleep(1);
   }
+  free(procName);
+  free(winTitle);
+  free(prevProcName);
+  free(prevWinTitle);
+  free(buf);
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, TCHAR *argv[]) {
   printf("Starting...\n");
   getLayerNames("../murphpad_kanata.kbd");
   loop();

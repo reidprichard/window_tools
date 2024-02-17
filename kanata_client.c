@@ -4,36 +4,23 @@
 #include <windows.h>
 #include <minwindef.h>
 #include <Psapi.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-// #include <WinUser.h>
+#include "utils.c"
 
 #pragma comment(lib, "Ws2_32.lib")
-const TCHAR* configFilePath = "../murphpad_kanata.kbd";
 
 #define MAX_LAYERS 25
 #define MAX_LAYER_NAME_LENGTH 64
 #define MAX_CONFIG_FILE_LINE_LENGTH 256
+#define BUFFER_LEN 256
 
+const TCHAR* configFilePath = "../murphpad_kanata.kbd";
 const TCHAR* layerStartStr = "(deflayer ";
 TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
 int layerCount = 0;
 const TCHAR* hostname = "localhost";
 const TCHAR* port = "1337";
-
-static BOOL CALLBACK enumWindowCallback(HWND hWnd, LPARAM lparam) {
-  int length = GetWindowTextLength(hWnd);
-  TCHAR* buff = malloc(length);
-  
-
-  free(buff);
-  return 0;
-}
-
-int getWindowHwnd(const TCHAR* windowTitle, HWND* hWnd) {
-  EnumWindows(enumWindowCallback, NULL);
-}
 
 int getLayerNames(const TCHAR* configPath) {
   FILE *fptr;
@@ -65,60 +52,6 @@ int getLayerNames(const TCHAR* configPath) {
   }
 
   return 0;
-}
-
-int forceSetForegroundWindow(HWND window) {
-  // Tricks here courtesy of https://gist.github.com/Aetopia/1581b40f00cc0cadc93a0e8ccb65dc8c
-  // These were suggested to help, but I found them unnecessary:
-  // AllocConsole();
-  // FreeConsole();
-  INPUT pInputs[] = {
-      {.type = INPUT_KEYBOARD, .ki.wVk = VK_MENU, .ki.dwFlags = 0},
-      {.type = INPUT_KEYBOARD,
-       .ki.wVk = VK_MENU,
-       .ki.dwFlags = KEYEVENTF_KEYUP}};
-  SendInput(2, pInputs, sizeof(INPUT));
-  return SetForegroundWindow(window);
-}
-
-#define BUFFER_LEN 256
-int getForegroundWindowInfo(HWND* foregroundWindow, TCHAR** processName, TCHAR** windowTitle) {
-  DWORD dwProcId = 0;
-  int returnCode = 0;
-
-  // It seems that 
-  // for (int charIndex = 0; charIndex < BUFFER_LEN; ++charIndex) {
-  //   (*processName)[charIndex] = '\0';
-  // }
-
-  // ** Get fg window handle **
-  *foregroundWindow = GetForegroundWindow();
-  // ** Get window process name **
-  returnCode |= GetWindowThreadProcessId(*foregroundWindow, &dwProcId);
-  HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcId);
-  TCHAR processPath[BUFFER_LEN];
-  returnCode |= GetModuleFileNameExA((HMODULE) hProc, NULL,processPath, BUFFER_LEN);
-  CloseHandle(hProc);
-  // ** Get part of process name after last backslash
-  // This pointer math is IFFY, hope it's right lol
-  TCHAR* procStart = processPath;
-  TCHAR* backslashPos = strrchr(processPath, '\\');
-  if (backslashPos) {
-    procStart = backslashPos + 1; // Add one to omit the slash
-  }
-  TCHAR* procEnd = strstr(processPath, ".exe");
-  int end = strlen(procStart);
-  if (strstr(processPath, ".exe")) {
-    end -= 4;
-  }
-
-  for (int charIndex = 0; charIndex < min(end, BUFFER_LEN-1); ++ charIndex) {
-    (*processName)[charIndex] = *(procStart + charIndex);
-  }
-  (*processName)[max(0, min(strlen(procStart)-4, BUFFER_LEN))] = '\0'; // Subtract 4 for the ".exe"
-  // ** Get window title **
-  returnCode |= GetWindowTextA(*foregroundWindow, *windowTitle, BUFFER_LEN);
-  return returnCode;
 }
 
 int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {

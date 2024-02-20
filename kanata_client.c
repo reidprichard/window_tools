@@ -1,3 +1,23 @@
+/*! file kanata_client.c
+ * \brief A simple Windows daemon that enables application-specific keybinds in Kanata.
+ *
+ *  This program monitors the active window and correspondingly requests layer
+ *  changes from Kanata (over TCP). The daemon gets the name of the process
+ *  that spawned the active window, removes the ".exe" from the end, and
+ *  attempts to activate a layer with that name. 
+ *  For example, if you activated your Firefox window, it would send the
+ *  following message to Kanata: {"ChangeLayer":{"new":"firefox"}. Process
+ *  names are not always obvious, but when this program is running it will
+ *  print the active window's process name to the console.
+ *  By default, it attempts to connect to Kanata at localhost:80, but the host
+ *  and port can both be changed using command line arguments.
+ *  If the users's .kbd config file is specified, all layer names will be
+ *  extracted from the file. Activating a window without a corresponding layer
+ *  will result in a "base" layer being activated. This layer is named
+ *  "default" by default, but it can be changed with a command line argument.
+ *
+ * */
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 

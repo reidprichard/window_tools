@@ -73,10 +73,10 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://github.com/reidprichard/window_tools/blob/main/assets/demo.png)
 
-`This project consists of two simple tools for interacting with windows. The
+This project consists of two simple tools for interacting with windows. The
 first, window_manager, allows you to save (and later refocus) any window with a
 single command. The second communicates with Kanata's TCP server to set
-application-specific keybinds.`
+application-specific keybinds.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

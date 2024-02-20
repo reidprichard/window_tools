@@ -184,6 +184,8 @@ See the [open issues](https://github.com/reidprichard/window_tools/issues) for a
 <!-- CONTRIBUTING -->
 ## Contributing
 
+I'm brand new to git, brand new to the Win32 API, and not the most experienced C programmer, so I would love any improvements or critiques that could be made.
+
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
 If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".

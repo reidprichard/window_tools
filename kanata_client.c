@@ -266,6 +266,9 @@ int main(int argc, TCHAR *argv[]) {
   // The port of Kanata's TCP server. You may want to put Kanata on something
   // more obscure than 80.
   TCHAR port[BUFFER_LEN] = "80";
+  TCHAR configFileName[MAX_PATH];
+  configFileName[0] = '\0';
+
   // The name of the default/base layer in your Kanata config. If the active
   // window's process isn't found in your list of layer names, this layer will
   // be activated instead.
@@ -280,13 +283,17 @@ int main(int argc, TCHAR *argv[]) {
       sscanf_s(argv[i], "--port=%s", port);
     } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
       sscanf_s(argv[i], "--default-layer=%s", defaultLayer);
+    } else if (strstr(argv[i], "--config-file=") == argv[i]) {
+      sscanf_s(argv[i], "--config-file=%s", configFileName);
     } else {
       printf("Invalid argument.\n");
       return 1;
     }
   }
   printf("Starting...\n");
-  getLayerNames("../murphpad_kanata.kbd");
+  if (strlen(configFileName) > 0) {
+    getLayerNames(configFileName);
+  }
   loop(hostname, port, defaultLayer);
   return 0;
 }

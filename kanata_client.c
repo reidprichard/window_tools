@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "utils.c"
 
+// Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32 to the compile command
 #pragma comment(lib, "Ws2_32.lib")
 
 #define MAX_LAYERS 25
@@ -145,13 +146,13 @@ void loop() {
   }
 
   HWND fg;
-  TCHAR* procName = malloc(maxProcNameLen);
-  TCHAR* winTitle = malloc(maxWinTitleLen);
-  TCHAR* prevProcName = malloc(maxProcNameLen);
-  TCHAR* prevWinTitle = malloc(maxWinTitleLen);
+  TCHAR procName[maxProcNameLen];
+  TCHAR winTitle[maxWinTitleLen];
+  TCHAR prevProcName[maxProcNameLen];
+  TCHAR prevWinTitle[maxWinTitleLen];
   TCHAR* buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
   while(TRUE) {
-    if (getForegroundWindowInfo(&fg, &procName, &winTitle) && (strcmp(winTitle, prevWinTitle) != 0)) {
+    if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
       printf("HWND: '%p',\tTitle: '%s',\tProc: '%s'\n", fg, winTitle, procName);
       sprintf_s(buf, MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE), LAYER_CHANGE_TEMPLATE, procName);
       iResult = sendTCP(kanataSocket, buf);
@@ -163,10 +164,6 @@ void loop() {
     }
     // Sleep(1);
   }
-  free(procName);
-  free(winTitle);
-  free(prevProcName);
-  free(prevWinTitle);
   free(buf);
 }
 

@@ -162,7 +162,7 @@ void loop() {
       }
       strcpy_s(prevWinTitle, maxWinTitleLen, winTitle);
     }
-    // Sleep(1);
+    Sleep(10);
   }
   free(buf);
 }

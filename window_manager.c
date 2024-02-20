@@ -22,6 +22,7 @@
 
 // TODO: Incorporate/spin off a daemon that periodically updates saved window
 // titles and handles
+// TODO: Add documentation
 
 int activateSavedWindow(int index, TCHAR *filePath) {
   if (index < 0 || index >= MAX_SAVED_WINDOWS) {
@@ -56,7 +57,7 @@ int activateSavedWindow(int index, TCHAR *filePath) {
   }
   // If the window was successfully activated, re-save it in case the title or
   // handle has changed.
-  if (returnCode != 0) {
+  if (returnCode == 0) {
     saveWindow(index, filePath);
   }
   return returnCode;

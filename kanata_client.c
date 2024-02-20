@@ -19,6 +19,7 @@
  * */
 
 // TODO: Set up CMake or make or something.
+// TODO: Add system tray icon so this can be run in the background
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -174,7 +175,7 @@ int initTcp(const TCHAR *host, const TCHAR *port, SOCKET *ConnectSocket) {
   iResult = recv(*ConnectSocket, buf, BUFFER_LEN, 0);
   if (iResult > 0) {
     printf("TCP connection successful.\n");
-    printf("'%s'\n", buf);
+    // printf("'%s'\n", buf);
   } else if (iResult == 0) {
     printf("Connection closed\n");
     return 1;

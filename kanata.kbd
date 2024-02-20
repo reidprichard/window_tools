@@ -1,0 +1,80 @@
+;; vim: set filetype=lisp:
+
+(defcfg
+  danger-enable-cmd yes
+  windows-interception-keyboard-hwids (
+    "72, 0, 73, 0, 68, 0, 92, 0, 86, 0, 73, 0, 68, 0, 95, 0, 54, 0, 68, 0, 55, 0, 55, 0, 38, 0, 80, 0, 73, 0, 68, 0, 95, 0, 49, 0, 55, 0, 48, 0, 53, 0, 38, 0, 82, 0, 69, 0, 86, 0, 95, 0, 48, 0, 51, 0, 48, 0, 49, 0, 38, 0, 77, 0, 73, 0, 95, 0, 48, 0, 48, 0, 0, 0, 72, 0, 73, 0, 68, 0, 92, 0, 86, 0, 73, 0, 68, 0, 95, 0, 54, 0, 68, 0, 55, 0, 55, 0, 38, 0, 80, 0, 73, 0, 68, 0, 95, 0, 49, 0, 55, 0, 48, 0, 53, 0, 38, 0, 77, 0, 73, 0, 95, 0, 48, 0, 48, 0, 0, 0, 72, 0, 73, 0, 68, 0, 92, 0, 86, 0, 73, 0, 68, 0, 95, 0, 54, 0, 68, 0, 55, 0, 55, 0, 38, 0, 85, 0, 80, 0, 58, 0, 48, 0, 48, 0, 48, 0, 49, 0, 95, 0, 85, 0, 58, 0, 48, 0, 48, 0, 48, 0, 54, 0, 0, 0, 72, 0, 73, 0, 68, 0, 95, 0, 68, 0, 69, 0, 86, 0, 73, 0, 67, 0, 69, 0, 95, 0, 83, 0, 89, 0, 83, 0, 84, 0, 69, 0, 77, 0, 95, 0, 75, 0, 69, 0, 89, 0, 66, 0, 79, 0, 65, 0, 82, 0, 68, 0, 0, 0, 72, 0, 73, 0, 68, 0, 95, 0, 68, 0, 69, 0, 86, 0, 73, 0, 67, 0, 69, 0, 95, 0, 85, 0, 80, 0, 58, 0, 48, 0, 48, 0, 48, 0, 49, 0, 95, 0, 85, 0, 58, 0, 48, 0, 48, 0, 48, 0, 54, 0, 0, 0, 72, 0, 73, 0, 68, 0, 95, 0, 68, 0, 69, 0, 86, 0, 73, 0, 67, 0, 69"  
+  )
+)
+
+(defalias win1 (fork 
+                 (cmd window_manager.exe --load-window=0) 
+                 (cmd window_manager.exe --save-window=0) 
+                 (lctl rctl)
+               )
+)
+
+(defvar
+  window_manager ./hotkey_window_tools/window_manager.exe
+)
+
+(defalias load1 (cmd $window_manager --load-window=0))
+(defalias save1 (cmd $window_manager --save-window=0))
+(defalias load2 (cmd $window_manager --load-window=1))
+(defalias save2 (cmd $window_manager --save-window=1))
+(defalias load3 (cmd $window_manager --load-window=2))
+(defalias save3 (cmd $window_manager --save-window=2))
+(defalias load4 (cmd $window_manager --load-window=3))
+(defalias save4 (cmd $window_manager --save-window=3))
+          
+(defalias fn1 (layer-while-held fn1))
+(defalias fn2 (layer-while-held fn1))
+
+(defsrc
+      q r s t
+      m n o p
+ u    i j k l
+ lalt e f g h
+ lctl a b c d
+)
+
+(deflayer default
+      _ _ _ lrld
+      _ _ _ _
+ _    _ _ _ _
+ @fn2 _ _ _ _
+ @fn1 @load1 @load2 @load3 @load4
+)
+
+(deflayer WindowsTerminal
+   _ _ _ _
+   _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+)
+
+(deflayer floorp
+   _ _ _ _
+   _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+)
+
+(deflayer WindowsTerminal
+   _ _ _ _
+   _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+)
+
+(deflayer explorer
+   _ _ _ _
+   _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+ _ _ _ _ _
+)
+

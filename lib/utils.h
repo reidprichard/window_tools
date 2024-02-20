@@ -1,7 +1,5 @@
 #pragma once
 
-#ifndef UTILS_H
-#define UTILS_H
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -35,4 +33,3 @@ int activateWindowByTitle(const TCHAR *windowTitle);
  * @return 0 if failed, nonzero if successful.
  */
 int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle);
-#endif

@@ -8,8 +8,20 @@
 
 #define BUFFER_LEN 256
 // TODO: Replace BUFFER_LEN with something more sensible
+// TODO: Make getForegroundWindowInfo accept NULL for strings
 
 int forceSetForegroundWindow(const HWND hWnd) {
+
+  // First check if the desired window is already active. This is so that the
+  // keypress of alt (below) doesn't cause the menubar to pop up.
+  HWND currentActiveWindow;
+  TCHAR buf1[BUFFER_LEN];
+  TCHAR buf2[BUFFER_LEN];
+  getForegroundWindowInfo(&currentActiveWindow, &buf1[0], &buf2[0]);
+  if (currentActiveWindow == hWnd) {
+    return 0;
+  }
+
   // Tricks here courtesy of https://gist.github.com/Aetopia/1581b40f00cc0cadc93a0e8ccb65dc8c
   // These were suggested to help, but I found them unnecessary:
   // AllocConsole();

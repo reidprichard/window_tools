@@ -9,7 +9,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "utils.c"
+#include "lib/utils.h"
 
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
 // to the compile command
@@ -28,6 +28,12 @@ TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
 // The number of layers found in the Kanata .kbd config file.
 int layerCount = 0;
 
+/**
+ * @brief Gets a list of names of layers in a Kanata (or potentially Kmonad) .kbd config file.
+ *
+ * @param[in] configPath The path to the config file.
+ * @return 0 if successful, 1 if failed.
+ */
 int getLayerNames(const TCHAR *configPath) {
   // Layer definitions in the config file are assumed to start with this string.
   const TCHAR *layerStartStr = "(deflayer ";
@@ -65,9 +71,15 @@ int getLayerNames(const TCHAR *configPath) {
     printf("Layer %d: '%s'\n", i, layerNames[i]);
   }
 
-  return 0;
+  return (layerCount != 0);
 }
 
+/**
+ * @brief Checks if a layer name exists in the previously-read Kanata config file.
+ *
+ * @param[in] layerName The layer name to be checked.
+ * @return 1 if the layer name was in the config file, 0 if it was not.
+ */
 int checkLayer(const TCHAR *layerName) {
   for (int i = 0; i < layerCount; ++i) {
     if (strcmp(layerName, layerNames[i]) == 0) {
@@ -77,6 +89,14 @@ int checkLayer(const TCHAR *layerName) {
   return 0;
 }
 
+/**
+ * @brief Initializes a TCP connection.
+ *
+ * @param[in] host The hostname or address to connect to.
+ * @param[in] port The port number to connect to.
+ * @param[out] ConnectSocket The TCP socket.
+ * @return 0 if successful, nonzero if failed.
+ */
 int initTcp(const TCHAR *host, const TCHAR *port, SOCKET *ConnectSocket) {
   printf("Connecting to %s:%s...\n", host, port);
 
@@ -134,14 +154,23 @@ int initTcp(const TCHAR *host, const TCHAR *port, SOCKET *ConnectSocket) {
     printf("'%s'\n", buf);
   } else if (iResult == 0) {
     printf("Connection closed\n");
+    return 1;
   } else {
     printf("recv failed: %d\n", WSAGetLastError());
+    return 1;
   }
 
   return 0;
 }
 
-int sendTCP(SOCKET sock, TCHAR *msg) {
+/**
+ * @brief Sends data over TCP to the given socket.
+ *
+ * @param[in] sock The socket to use.
+ * @param[in] msg The message to be sent.
+ * @return 0 if successful, nonzero if failed.
+ */
+int sendTCP(SOCKET sock, const TCHAR *msg) {
   printf("Sending: '%s'\n", msg);
   // TCHAR* msg = "hello world";
   int iResult = send(sock, msg, (int)strlen(msg), 0);
@@ -155,8 +184,21 @@ int sendTCP(SOCKET sock, TCHAR *msg) {
   return 0;
 }
 
+// The template for a TCP message to request a layer change.
 #define LAYER_CHANGE_TEMPLATE "{\"ChangeLayer\":{\"new\":\"%s\"}}"
 
+/**
+ * @brief The function's main loop. When the focused window changes, sends a
+ * TCP message to the socket requesting a layer change. If the connection dies,
+ * attempts to reinitialize the socket.
+ *
+ * @param[in] hostname The hostname that Kanata is listening on. I cannot
+ * imagine this needing to be anything but "localhost" or "127.0.0.1".
+ * @param[in] port The port that Kanata is listening on. 
+ * @param[in] baseLayer The name of the Kanata layer that should be used if the
+ * current application's process name does not match a layer name in the config
+ * file.
+ */
 void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   SOCKET kanataSocket;
   int iResult = initTcp(hostname, port, &kanataSocket);

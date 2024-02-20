@@ -7,7 +7,7 @@
 #define BUFFER_LEN 256
 // TODO: Replace BUFFER_LEN with something more sensible
 
-int forceSetForegroundWindow(HWND window) {
+int forceSetForegroundWindow(const HWND hWnd) {
   // Tricks here courtesy of https://gist.github.com/Aetopia/1581b40f00cc0cadc93a0e8ccb65dc8c
   // These were suggested to help, but I found them unnecessary:
   // AllocConsole();
@@ -15,17 +15,17 @@ int forceSetForegroundWindow(HWND window) {
   INPUT pInputs[] = {{.type = INPUT_KEYBOARD, .ki.wVk = VK_MENU, .ki.dwFlags = 0},
                      {.type = INPUT_KEYBOARD, .ki.wVk = VK_MENU, .ki.dwFlags = KEYEVENTF_KEYUP}};
   SendInput(2, pInputs, sizeof(INPUT));
-  return SetForegroundWindow(window);
+  return SetForegroundWindow(hWnd);
 }
 
-int activateWindowByHandle(HWND hWnd) { return forceSetForegroundWindow(hWnd); }
+int activateWindowByHandle(const HWND hWnd) { return forceSetForegroundWindow(hWnd); }
 
 int activateWindowByTitle(const TCHAR *windowTitle) {
   HWND hWnd = FindWindow(NULL, windowTitle);
   if (hWnd) {
     return activateWindowByHandle(hWnd);
   } else {
-    return 1;
+    return 0;
   }
 }
 

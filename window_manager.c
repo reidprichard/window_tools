@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "utils.c"
+#include "lib/utils.h"
 
 #define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
 #define STRING_LEN 256 // Probably should differentiate different strings ¯\_(ツ)_/¯

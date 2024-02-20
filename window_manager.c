@@ -62,7 +62,8 @@ int saveWindow(int index, TCHAR* filePath) {
 }
 
 int main(int argc, TCHAR *argv[]) {
-  TCHAR iniFilePath[MAX_PATH] = "./saved_windows.ini";
+  TCHAR iniFilePath[MAX_PATH];
+  iniFilePath[0] = 0;
   TCHAR iniFileAbsolutePath[MAX_PATH];
 
   int saveIndex = -1;
@@ -92,6 +93,16 @@ int main(int argc, TCHAR *argv[]) {
       sscanf_s(argv[i], "--save-window=%d", &saveIndex);
     }
   }
+
+  if (iniFilePath[0] == 0) {
+    DWORD bufCharCount = MAX_PATH;
+    GetComputerName(iniFilePath, &bufCharCount);
+    printf("%s\n", iniFilePath);
+    TCHAR* buf = malloc(sizeof(iniFilePath) + 4);
+    sprintf(buf, "saved_windows-%s.ini", iniFilePath);
+    strcpy_s(iniFilePath, MAX_PATH, buf);
+  }
+
   int result = GetFullPathName(iniFilePath, MAX_PATH, iniFileAbsolutePath, NULL);
   if (result != strlen(iniFileAbsolutePath)) {
     printf("Invalid config file path: %s", iniFilePath);

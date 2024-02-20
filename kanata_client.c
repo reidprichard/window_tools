@@ -11,46 +11,57 @@
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32 to the compile command
 #pragma comment(lib, "Ws2_32.lib")
 
-#define MAX_LAYERS 25
-#define MAX_LAYER_NAME_LENGTH 64
-#define MAX_CONFIG_FILE_LINE_LENGTH 256
 #define BUFFER_LEN 256
+const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
+const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 
-// TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
-// int layerCount = 0;
+#define MAX_LAYERS 25 // Kanata default max
+#define MAX_LAYER_NAME_LENGTH 64 // Seems reasonable?
+#define MAX_CONFIG_FILE_LINE_LENGTH 256 // Seems reasonable?
+TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
+int layerCount = 0;
 
-// int getLayerNames(const TCHAR* configPath) {
-//   const TCHAR* layerStartStr = "(deflayer ";
-//   FILE *fptr;
-//   fopen_s(&fptr, configPath, "r");
-//   TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
-//   int layerNum = 0;
-//   while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
-//     TCHAR* pos = strstr(buf, layerStartStr);
-//     // Check that:
-//     // 1: layerStartStr is found
-//     // 2. The line continues past layerStartStr (add 1 to account for newline)
-//     if (pos && strlen(buf) > strlen(layerStartStr) + 1) {
-//       int layerNameLength = strlen(buf) - strlen(layerStartStr);
-//       for (int charIndex = 0; charIndex < min(layerNameLength, MAX_LAYER_NAME_LENGTH); ++charIndex) {
-//         layerNames[layerNum][charIndex] = buf[strlen(layerStartStr)+charIndex];
-//       }
-//       layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
-//       ++layerNum;
-//     }
-//   }
-//   layerCount = layerNum;
-//   while (layerNum < MAX_LAYERS) {
-//     layerNames[layerNum][0] = '\0';
-//     ++layerNum;
-//   }
-//   printf("%d layers found\n", layerCount);
-//   for (int i = 0; i < layerCount; ++i) {
-//     printf("Layer %d: %s\n", i, layerNames[i]);
-//   }
-//
-//   return 0;
-// }
+int getLayerNames(const TCHAR* configPath) {
+  // Layer definitions in the config file are assumed to start with this string.
+  const TCHAR* layerStartStr = "(deflayer ";
+
+  // Open the config file
+  FILE *fptr;
+  fopen_s(&fptr, configPath, "r");
+
+  // Buffer to read lines into
+  TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
+  // Index of the current layer. Incremented each time a new layer is read.
+  int layerNum = 0;
+  // Read the file line line at a time
+  while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
+    TCHAR* pos = strstr(buf, layerStartStr);
+    // Check that:
+    // 1: layerStartStr is found at the start of the line
+    // 2. The line continues past layerStartStr (add 1 to account for newline)
+    if (pos == buf && strlen(buf) > strlen(layerStartStr) + 1) {
+      int layerNameLength = strlen(buf) - strlen(layerStartStr) - 1;
+
+      strcpy_s(layerNames[layerNum], MAX_LAYER_NAME_LENGTH, buf + strlen(layerStartStr));
+      // for (int charIndex = 0; charIndex < min(layerNameLength, MAX_LAYER_NAME_LENGTH); ++charIndex) {
+      //   layerNames[layerNum][charIndex] = buf[strlen(layerStartStr)+charIndex];
+      // }
+      layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
+      ++layerNum;
+    }
+  }
+  layerCount = layerNum;
+  while (layerNum < MAX_LAYERS) {
+    layerNames[layerNum][0] = '\0';
+    ++layerNum;
+  }
+  printf("%d layers found\n", layerCount);
+  for (int i = 0; i < layerCount; ++i) {
+    printf("Layer %d: '%s'\n", i, layerNames[i]);
+  }
+
+  return 0;
+}
 
 int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
   int iResult;
@@ -99,6 +110,15 @@ int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
     return 1;
   }
 
+  TCHAR buf[BUFFER_LEN];
+  iResult = recv(*ConnectSocket, buf, BUFFER_LEN, 0);
+  if (iResult > 0) {
+    printf("Bytes received: %d\n", iResult);
+  } else if (iResult == 0) {
+    printf("Connection closed\n");
+  } else {
+    printf("recv failed: %d\n", WSAGetLastError());
+  }
 
   printf("TCP connection successful.\n");
   return 0;
@@ -131,10 +151,8 @@ int sendTCP(SOCKET sock, TCHAR* msg) {
 
 #define LAYER_CHANGE_TEMPLATE "{\"ChangeLayer\":{\"new\":\"%s\"}}"
 
-const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
-const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 
-void loop(TCHAR* hostname, TCHAR* port) {
+void loop(const TCHAR* hostname, const TCHAR* port) {
   SOCKET kanataSocket;
   int iResult = initTcp(hostname, port, &kanataSocket);
   if (iResult == SOCKET_ERROR) {
@@ -150,7 +168,7 @@ void loop(TCHAR* hostname, TCHAR* port) {
   TCHAR* buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
   while(TRUE) {
     if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
-      printf("HWND: '%p',\tTitle: '%s',\tProc: '%s'\n", fg, winTitle, procName);
+      printf("hWnd: '%p',\tTitle: '%s',\tProcess: '%s'\n", fg, winTitle, procName);
       sprintf_s(buf, MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE), LAYER_CHANGE_TEMPLATE, procName);
       iResult = sendTCP(kanataSocket, buf);
       if (iResult) {
@@ -185,7 +203,7 @@ int main(int argc, TCHAR *argv[]) {
 
   }
   printf("Starting...\n");
-  // getLayerNames("../murphpad_kanata.kbd");
+  getLayerNames("../murphpad_kanata.kbd");
   loop(hostname, port);
   return 0;
 }

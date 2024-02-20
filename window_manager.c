@@ -1,25 +1,26 @@
 // gcc window_manager.c -o window_manager.exe -g
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <minwindef.h>
+#include "utils.c"
 #include <Psapi.h>
+#include <minwindef.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "utils.c"
+#include <windows.h>
 
 #define MAX_SAVED_WINDOWS 999
 #define MAX_SAVED_WINDOWS_DIGITS 3
 #define STRING_LEN 256
 #define HWND_LEN 17 // Add one to account for null byte
 
-// TODO: Incorporate/spin off a daemon that periodically updates saved window titles and handles
+// TODO: Incorporate/spin off a daemon that periodically updates saved window
+// titles and handles
 
-int activateSavedWindow(int index, TCHAR* filePath);
-int saveWindow(int index, TCHAR* filePath);
+int activateSavedWindow(int index, TCHAR *filePath);
+int saveWindow(int index, TCHAR *filePath);
 
-int activateSavedWindow(int index, TCHAR* filePath) {
+int activateSavedWindow(int index, TCHAR *filePath) {
   if (index < 0 || index >= MAX_SAVED_WINDOWS) {
     return 1;
   }
@@ -49,16 +50,17 @@ int activateSavedWindow(int index, TCHAR* filePath) {
       printf("Attempting to restore by title.\n");
       returnCode = activateWindowByTitle(windowTitle);
     }
-  } 
-  // If the window was successfully activated, re-save it in case the title or handle has changed.
+  }
+  // If the window was successfully activated, re-save it in case the title or
+  // handle has changed.
   if (returnCode != 0) {
     saveWindow(index, filePath);
   }
   return returnCode;
 }
 
-int saveWindow(int index, TCHAR* filePath) {
-  if (index < 0 || index > MAX_SAVED_WINDOWS-1) {
+int saveWindow(int index, TCHAR *filePath) {
+  if (index < 0 || index > MAX_SAVED_WINDOWS - 1) {
     return 1;
   }
   printf("Saving current window to index #%d\n", index);
@@ -83,31 +85,25 @@ int main(int argc, TCHAR *argv[]) {
 
   int saveIndex = -1;
   int loadIndex = -1;
-  
-  for (int i=min(1,argc); i<argc; ++i) {
+
+  for (int i = min(1, argc); i < argc; ++i) {
     // printf("%d\t%s\n",i,argv[i]);
     if (strchr(argv[i], '-') != argv[i]) {
       printf("ERROR: Invalid syntax.\n");
       return 1;
-    }
-    else if (strstr(argv[i], "--path=")==argv[i]) {
+    } else if (strstr(argv[i], "--path=") == argv[i]) {
       sscanf_s(argv[i], "--path=%s", iniFilePath);
-    }
-    else if (strstr(argv[i], "--get-current-window")==argv[i]) {
+    } else if (strstr(argv[i], "--get-current-window") == argv[i]) {
       printf("Current window: %p\n", GetForegroundWindow());
-    }
-    else if (strstr(argv[i], "--activate-window=")==argv[i]) {
+    } else if (strstr(argv[i], "--activate-window=") == argv[i]) {
       HWND windowHandle;
       sscanf_s(argv[i], "--activate-window=%p", &windowHandle);
       activateWindowByHandle(windowHandle);
-    }
-    else if (strstr(argv[i], "--load-window=")==argv[i]) {
+    } else if (strstr(argv[i], "--load-window=") == argv[i]) {
       sscanf_s(argv[i], "--load-window=%d", &loadIndex);
-    }
-    else if (strstr(argv[i], "--save-window=")==argv[i]) {
+    } else if (strstr(argv[i], "--save-window=") == argv[i]) {
       sscanf_s(argv[i], "--save-window=%d", &saveIndex);
-    }
-    else {
+    } else {
       printf("Invalid argument.\n");
       return 1;
     }
@@ -117,7 +113,7 @@ int main(int argc, TCHAR *argv[]) {
     DWORD bufCharCount = MAX_PATH;
     GetComputerName(iniFilePath, &bufCharCount);
     printf("%s\n", iniFilePath);
-    TCHAR* buf = malloc(sizeof(iniFilePath) + 4);
+    TCHAR *buf = malloc(sizeof(iniFilePath) + 4);
     sprintf(buf, "saved_windows-%s.ini", iniFilePath);
     strcpy_s(iniFilePath, MAX_PATH, buf);
   }

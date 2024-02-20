@@ -1,30 +1,31 @@
 #define WIN32_LEAN_AND_MEAN
-#include <ws2tcpip.h>
-#include <winsock2.h>
-#include <windows.h>
-#include <minwindef.h>
+#include "utils.c"
 #include <Psapi.h>
+#include <minwindef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "utils.c"
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-// Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32 to the compile command
+// Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
+// to the compile command
 #pragma comment(lib, "Ws2_32.lib")
 
 #define BUFFER_LEN 256
 const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 
-#define MAX_LAYERS 25 // Kanata default max
-#define MAX_LAYER_NAME_LENGTH 64 // Seems reasonable?
+#define MAX_LAYERS 25                   // Kanata default max
+#define MAX_LAYER_NAME_LENGTH 64        // Seems reasonable?
 #define MAX_CONFIG_FILE_LINE_LENGTH 256 // Seems reasonable?
 TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
 int layerCount = 0;
 
-int getLayerNames(const TCHAR* configPath) {
+int getLayerNames(const TCHAR *configPath) {
   // Layer definitions in the config file are assumed to start with this string.
-  const TCHAR* layerStartStr = "(deflayer ";
+  const TCHAR *layerStartStr = "(deflayer ";
 
   // Open the config file
   FILE *fptr;
@@ -36,7 +37,7 @@ int getLayerNames(const TCHAR* configPath) {
   int layerNum = 0;
   // Read the file line line at a time
   while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
-    TCHAR* pos = strstr(buf, layerStartStr);
+    TCHAR *pos = strstr(buf, layerStartStr);
     // Check that:
     // 1: layerStartStr is found at the start of the line
     // 2. The line continues past layerStartStr (add 1 to account for newline)
@@ -62,8 +63,8 @@ int getLayerNames(const TCHAR* configPath) {
   return 0;
 }
 
-int checkLayer(const TCHAR* layerName) {
-  for (int i=0; i<layerCount; ++i) {
+int checkLayer(const TCHAR *layerName) {
+  for (int i = 0; i < layerCount; ++i) {
     if (strcmp(layerName, layerNames[i]) == 0) {
       return 1;
     }
@@ -71,12 +72,12 @@ int checkLayer(const TCHAR* layerName) {
   return 0;
 }
 
-int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
+int initTcp(const TCHAR *host, const TCHAR *port, SOCKET *ConnectSocket) {
   printf("Connecting to %s:%s...\n", host, port);
 
   int iResult;
   WSADATA wsaData;
-  iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
+  iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
   if (iResult != 0) {
     printf("WSAStartup failed: %d\n", iResult);
   }
@@ -125,7 +126,7 @@ int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
   iResult = recv(*ConnectSocket, buf, BUFFER_LEN, 0);
   if (iResult > 0) {
     printf("TCP connection successful.\n");
-    printf("'%s'\n",buf);
+    printf("'%s'\n", buf);
   } else if (iResult == 0) {
     printf("Connection closed\n");
   } else {
@@ -135,7 +136,7 @@ int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
   return 0;
 }
 
-int sendTCP(SOCKET sock, TCHAR* msg) {
+int sendTCP(SOCKET sock, TCHAR *msg) {
   printf("Sending: '%s'\n", msg);
   // TCHAR* msg = "hello world";
   int iResult = send(sock, msg, (int)strlen(msg), 0);
@@ -151,8 +152,7 @@ int sendTCP(SOCKET sock, TCHAR* msg) {
 
 #define LAYER_CHANGE_TEMPLATE "{\"ChangeLayer\":{\"new\":\"%s\"}}"
 
-
-void loop(const TCHAR* hostname, const TCHAR* port, const TCHAR* baseLayer) {
+void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   SOCKET kanataSocket;
   int iResult = initTcp(hostname, port, &kanataSocket);
   if (iResult == SOCKET_ERROR) {
@@ -165,9 +165,9 @@ void loop(const TCHAR* hostname, const TCHAR* port, const TCHAR* baseLayer) {
   TCHAR winTitle[maxWinTitleLen];
   TCHAR prevProcName[maxProcNameLen];
   TCHAR prevWinTitle[maxWinTitleLen];
-  TCHAR* buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
-  const TCHAR* activeLayerName;
-  while(TRUE) {
+  TCHAR *buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
+  const TCHAR *activeLayerName;
+  while (TRUE) {
     // If the title of the active window changes
     if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
       printf("New window activated: hWnd='%p',\tTitle='%s',\tProcess='%s'\n", fg, winTitle, procName);
@@ -176,8 +176,7 @@ void loop(const TCHAR* hostname, const TCHAR* port, const TCHAR* baseLayer) {
       // activate that layer, otherwise activate baseLayer
       if (checkLayer(procName)) {
         activeLayerName = procName;
-      }
-      else {
+      } else {
         activeLayerName = baseLayer;
       }
       sprintf_s(buf, MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE), LAYER_CHANGE_TEMPLATE, activeLayerName);
@@ -204,25 +203,20 @@ int main(int argc, TCHAR *argv[]) {
   // window's process isn't found in your list of layer names, this layer will
   // be activated instead.
   TCHAR defaultLayer[MAX_LAYER_NAME_LENGTH] = "default";
-  for (int i=min(1,argc); i<argc; ++i) {
+  for (int i = min(1, argc); i < argc; ++i) {
     if (strchr(argv[i], '-') != argv[i]) {
       printf("ERROR: Invalid syntax.\n");
       return 1;
-    }
-    else if (strstr(argv[i], "--hostname=")==argv[i]) {
+    } else if (strstr(argv[i], "--hostname=") == argv[i]) {
       sscanf_s(argv[i], "--hostname=%s", hostname);
-    }
-    else if (strstr(argv[i], "--port=")==argv[i]) {
+    } else if (strstr(argv[i], "--port=") == argv[i]) {
       sscanf_s(argv[i], "--port=%s", port);
-    }
-    else if (strstr(argv[i], "--default-layer=")==argv[i]) {
+    } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
       sscanf_s(argv[i], "--default-layer=%s", defaultLayer);
-    }
-    else {
+    } else {
       printf("Invalid argument.\n");
       return 1;
     }
-
   }
   printf("Starting...\n");
   getLayerNames("../murphpad_kanata.kbd");

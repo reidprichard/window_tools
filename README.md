@@ -71,7 +71,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://github.com/reidprichard/window_tools/blob/main/assets/demo.png)
 
 `This project consists of two simple tools for interacting with windows. The
 first, window_manager, allows you to save (and later refocus) any window with a

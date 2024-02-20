@@ -14,6 +14,8 @@
 #define STRING_LEN 256
 #define HWND_LEN 17 // Add one to account for null byte
 
+// TODO: Incorporate/spin off a daemon that periodically updates saved window titles and handles
+
 int activateSavedWindow(int index, TCHAR* filePath);
 int saveWindow(int index, TCHAR* filePath);
 
@@ -27,21 +29,31 @@ int activateSavedWindow(int index, TCHAR* filePath) {
   printf("Activating window #%d\n", index);
   sprintf(indexStr, "%d", index);
 
-  int returnCode = 1;
+  int returnCode = 0;
+
+  // First, try activating the window by its saved hWnd
   DWORD iniReadResult = GetPrivateProfileString(indexStr, "hWnd", NULL, hWndStr, HWND_LEN, filePath);
+  // If hWnd was read from ini
   if (iniReadResult > 0) {
     HWND hWnd;
+    // Read pointer address from string into HWND
     sscanf_s(hWndStr, "%p", &hWnd);
     printf("Attempting to restore by handle '%s'.\n", hWndStr);
     returnCode = activateWindowByHandle(hWnd);
   }
+  // If unsuccessful, try activating by title
   if (returnCode == 0) {
+    // If window title was read from ini
     iniReadResult = GetPrivateProfileString(indexStr, "title", NULL, windowTitle, STRING_LEN, filePath);
     if (iniReadResult > 0) {
       printf("Attempting to restore by title.\n");
       returnCode = activateWindowByTitle(windowTitle);
     }
   } 
+  // If the window was successfully activated, re-save it in case the title or handle has changed.
+  if (returnCode != 0) {
+    saveWindow(index, filePath);
+  }
   return returnCode;
 }
 

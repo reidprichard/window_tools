@@ -1,7 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include <Psapi.h>
 #include <stdio.h>
-#include <windows.h>
 
 #define BUFFER_LEN 256
 // TODO: Replace BUFFER_LEN with something more sensible

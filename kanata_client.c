@@ -1,13 +1,15 @@
 #define WIN32_LEAN_AND_MEAN
-#include "utils.c"
+#include <windows.h>
+
 #include <Psapi.h>
 #include <minwindef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+
+#include "utils.c"
 
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
 // to the compile command
@@ -20,7 +22,10 @@ const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 #define MAX_LAYERS 25                   // Kanata default max
 #define MAX_LAYER_NAME_LENGTH 64        // Seems reasonable?
 #define MAX_CONFIG_FILE_LINE_LENGTH 256 // Seems reasonable?
+// A list of layer names found in the Kanata .kbd config file. This would
+// eventually be better as a hash-based type.
 TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
+// The number of layers found in the Kanata .kbd config file.
 int layerCount = 0;
 
 int getLayerNames(const TCHAR *configPath) {

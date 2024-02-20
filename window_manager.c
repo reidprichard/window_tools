@@ -1,13 +1,15 @@
 // gcc window_manager.c -o window_manager.exe -g
 
 #define WIN32_LEAN_AND_MEAN
-#include "utils.c"
+#include <windows.h>
+
 #include <Psapi.h>
 #include <minwindef.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+
+#include "utils.c"
 
 #define MAX_SAVED_WINDOWS 999
 #define MAX_SAVED_WINDOWS_DIGITS 3

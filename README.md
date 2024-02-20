@@ -115,20 +115,20 @@ at kanata_helper_daemon's console output. Note that layer names are case-sensiti
 
 For full functionality, you'll want to point kanata_helper_daemon to your Kanata config file, like so: . 
 <pre>
-.../path/to/kanata_helper_daemon.exe --port=1337 <u>--config-file=.../path/to/config/file.kbd</u>
+.../path/to/kanata_helper_daemon.exe --port=1337 <b>--config-file=.../path/to/config/file.kbd</b>
 </pre>
 The daemon will parse your config file to gather a list of all your layer names. If a process
 name does not match one of your layer names, it will return to the layer named "default".
 If you don't have a layer named "default", or you just want to use a different layer for this,
 you can specify the name like so:
 <pre>
-.../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd <u>--default-layer=my-default-layer</u>
+.../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd <b>--default-layer=my-default-layer</b>
 </pre>
 
 You will likely want to run this daemon in the background so that you don't need to keep a
 console window open. To do so, you can use the following syntax in PowerShell:
 <pre>
-<u>Start-Process</u> .../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd --default-layer=my-default-layer <u>-WindowStyle Hidden</u>
+<b>Start-Process</b> .../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd --default-layer=my-default-layer <b>-WindowStyle Hidden</b>
 </pre>
 
 If you wish to kill this background process, you can do so (again in PowerShell) with:
@@ -150,7 +150,7 @@ any number from 0-999.
 Saved windows are stored in a .ini file. By default, this will be "saved_windows-<computer-name>.ini".
 If you wish to change this file, you can do so with the `--path` argument:
 <pre>
-`/path/to/window_manager.exe <u>--path=.../path/to/your/file.ini</u> --save-window=0`
+`/path/to/window_manager.exe <b>--path=.../path/to/your/file.ini</b> --save-window=0`
 </pre>
 
 Both window title and handle (basically, a number that is a unique identifier for that particular window) are stored. 

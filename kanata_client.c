@@ -4,7 +4,7 @@
  *  This program monitors the active window and correspondingly requests layer
  *  changes from Kanata (over TCP). The daemon gets the name of the process
  *  that spawned the active window, removes the ".exe" from the end, and
- *  attempts to activate a layer with that name. 
+ *  attempts to activate a layer with that name.
  *  For example, if you activated your Firefox window, it would send the
  *  following message to Kanata: {"ChangeLayer":{"new":"firefox"}. Process
  *  names are not always obvious, but when this program is running it will
@@ -17,6 +17,8 @@
  *  "default" by default, but it can be changed with a command line argument.
  *
  * */
+
+// TODO: Set up CMake or make or something.
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -215,7 +217,7 @@ int sendTCP(SOCKET sock, const TCHAR *msg) {
  *
  * @param[in] hostname The hostname that Kanata is listening on. I cannot
  * imagine this needing to be anything but "localhost" or "127.0.0.1".
- * @param[in] port The port that Kanata is listening on. 
+ * @param[in] port The port that Kanata is listening on.
  * @param[in] baseLayer The name of the Kanata layer that should be used if the
  * current application's process name does not match a layer name in the config
  * file.
@@ -274,20 +276,35 @@ int main(int argc, TCHAR *argv[]) {
   // window's process isn't found in your list of layer names, this layer will
   // be activated instead.
   TCHAR defaultLayer[MAX_LAYER_NAME_LENGTH] = "default";
+
+  const TCHAR *helpMessage =  "Usage:\n"
+                        "  ./kanata_client.exe [options]\tStart daemon\n"
+                        "Options:\n"
+                        "  --config-file=<path>              The path to your Kanata .kbd config file.\n"
+                        "  --default-layer=<layer name>      The name of your base layer in Kanata. If a\n"
+                        "                                    program does not match one of your layer names,\n"
+                        "                                    this layer will be used. You must also specify\n"
+                        "                                    --config-file. (default: 'default')\n"
+                        "  --hostname=<hostname>             The hostname Kanata's TCP server is listening on.\n"
+                        "                                    You should not need to change this.\n"
+                        "                                    (default: 'localhost')\n"
+                        "  --port=<port number>              The port Kanata is listening on. (default: '80')\n";
+
+  // TODO: Move to an actual argument parser
   for (int i = min(1, argc); i < argc; ++i) {
-    if (strchr(argv[i], '-') != argv[i]) {
-      printf("ERROR: Invalid syntax.\n");
-      return 1;
+    if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+      printf("%s\n", helpMessage);
+      return 0;
+    } else if (strstr(argv[i], "--config-file=") == argv[i]) {
+      sscanf_s(argv[i], "--config-file=%s", configFileName);
+    } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
+      sscanf_s(argv[i], "--default-layer=%s", defaultLayer);
     } else if (strstr(argv[i], "--hostname=") == argv[i]) {
       sscanf_s(argv[i], "--hostname=%s", hostname);
     } else if (strstr(argv[i], "--port=") == argv[i]) {
       sscanf_s(argv[i], "--port=%s", port);
-    } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
-      sscanf_s(argv[i], "--default-layer=%s", defaultLayer);
-    } else if (strstr(argv[i], "--config-file=") == argv[i]) {
-      sscanf_s(argv[i], "--config-file=%s", configFileName);
     } else {
-      printf("Invalid argument.\n");
+      printf("ERROR: Invalid argument: '%s'. See --help for usage.\n", argv[i]);
       return 1;
     }
   }

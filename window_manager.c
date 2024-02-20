@@ -11,10 +11,13 @@
 
 #include "utils.c"
 
-#define MAX_SAVED_WINDOWS 999
-#define MAX_SAVED_WINDOWS_DIGITS 3
-#define STRING_LEN 256
+#define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
+#define STRING_LEN 256 // Probably should differentiate different strings ¯\_(ツ)_/¯
 #define HWND_LEN 17 // Add one to account for null byte
+
+// Credit: https://stackoverflow.com/a/29952494
+#define STRINGIFY(x) #x
+#define LENGTH(x) (sizeof(STRINGIFY(x)) - 1)
 
 // TODO: Incorporate/spin off a daemon that periodically updates saved window
 // titles and handles
@@ -27,7 +30,7 @@ int activateSavedWindow(int index, TCHAR *filePath) {
     return 1;
   }
   TCHAR windowTitle[STRING_LEN];
-  TCHAR indexStr[MAX_SAVED_WINDOWS_DIGITS];
+  TCHAR indexStr[LENGTH(MAX_SAVED_WINDOWS)];
   TCHAR hWndStr[HWND_LEN];
   printf("Activating window #%d\n", index);
   sprintf(indexStr, "%d", index);
@@ -71,7 +74,7 @@ int saveWindow(int index, TCHAR *filePath) {
   HWND hWnd;
   getForegroundWindowInfo(&hWnd, &processTitle[0], &windowTitle[0]);
   printf("Saving hWnd %p, process %s to %s\n", hWnd, processTitle, filePath);
-  TCHAR indexStr[MAX_SAVED_WINDOWS_DIGITS];
+  TCHAR indexStr[LENGTH(MAX_SAVED_WINDOWS)];
   TCHAR hWndStr[HWND_LEN];
   sprintf(indexStr, "%d", index);
   sprintf(hWndStr, "%p", hWnd);

@@ -4,6 +4,8 @@
 #include <Psapi.h>
 #include <stdio.h>
 
+#include "utils.h"
+
 #define BUFFER_LEN 256
 // TODO: Replace BUFFER_LEN with something more sensible
 

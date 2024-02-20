@@ -29,6 +29,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
+#include "kanata_client.h"
 #include "lib/utils.h"
 
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32

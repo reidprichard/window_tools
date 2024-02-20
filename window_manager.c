@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "window_manager.h"
 #include "lib/utils.h"
 
 #define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
@@ -21,9 +22,6 @@
 
 // TODO: Incorporate/spin off a daemon that periodically updates saved window
 // titles and handles
-
-int activateSavedWindow(int index, TCHAR *filePath);
-int saveWindow(int index, TCHAR *filePath);
 
 int activateSavedWindow(int index, TCHAR *filePath) {
   if (index < 0 || index >= MAX_SAVED_WINDOWS) {

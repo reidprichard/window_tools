@@ -18,7 +18,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/reidprichard/repo_name">
+  <a href="https://github.com/reidprichard/window_tools">
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -27,14 +27,14 @@
   <p align="center">
     This project consists of two simple tools for interacting with windows. The first, window_manager, allows you to save (and later refocus) any window with a single command. The second communicates with Kanata's TCP server to set application-specific keybinds.
     <br />
-    <a href="https://github.com/reidprichard/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/reidprichard/window_tools"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/reidprichard/repo_name">View Demo</a>
+    <a href="https://github.com/reidprichard/window_tools">View Demo</a>
     ·
-    <a href="https://github.com/reidprichard/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/reidprichard/window_tools/issues">Report Bug</a>
     ·
-    <a href="https://github.com/reidprichard/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/reidprichard/window_tools/issues">Request Feature</a>
   </p>
 </div>
 
@@ -175,7 +175,7 @@ to be bound to your keyboard. You can see a Kanata configuration that does this 
 - [ ] Hook kanata_helper_daemon to Win32 events rather than continually looping
 - [ ] Add background service for window_manager to update handles and titles as they change. This could be handled by kanata_helper_daemon.
 
-See the [open issues](https://github.com/reidprichard/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/reidprichard/window_tools/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -211,7 +211,7 @@ Distributed under the GNU General Public License v3.0 or later. See `LICENSE.txt
 <!-- CONTACT -->
 ## Contact
 
-Project Link: [https://github.com/reidprichard/repo_name](https://github.com/github_username/repo_name)
+Project Link: [https://github.com/reidprichard/window_tools](https://github.com/github_username/window_tools)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -219,16 +219,16 @@ Project Link: [https://github.com/reidprichard/repo_name](https://github.com/git
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/reidprichard/repo_name.svg?style=for-the-badge
-[contributors-url]: https://github.com/reidprichard/repo_name/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/reidprichard/repo_name.svg?style=for-the-badge
-[forks-url]: https://github.com/reidprichard/repo_name/network/members
-[stars-shield]: https://img.shields.io/github/stars/reidprichard/repo_name.svg?style=for-the-badge
-[stars-url]: https://github.com/reidprichard/repo_name/stargazers
-[issues-shield]: https://img.shields.io/github/issues/reidprichard/repo_name.svg?style=for-the-badge
-[issues-url]: https://github.com/reidprichard/repo_name/issues
-[license-shield]: https://img.shields.io/github/license/reidprichard/repo_name.svg?style=for-the-badge
-[license-url]: https://github.com/reidprichard/repo_name/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/reidprichard/window_tools.svg?style=for-the-badge
+[contributors-url]: https://github.com/reidprichard/window_tools/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/reidprichard/window_tools.svg?style=for-the-badge
+[forks-url]: https://github.com/reidprichard/window_tools/network/members
+[stars-shield]: https://img.shields.io/github/stars/reidprichard/window_tools.svg?style=for-the-badge
+[stars-url]: https://github.com/reidprichard/window_tools/stargazers
+[issues-shield]: https://img.shields.io/github/issues/reidprichard/window_tools.svg?style=for-the-badge
+[issues-url]: https://github.com/reidprichard/window_tools/issues
+[license-shield]: https://img.shields.io/github/license/reidprichard/window_tools.svg?style=for-the-badge
+[license-url]: https://github.com/reidprichard/window_tools/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
 [product-screenshot]: images/screenshot.png

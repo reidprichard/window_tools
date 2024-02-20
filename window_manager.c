@@ -14,6 +14,9 @@
 #define STRING_LEN 256
 #define HWND_LEN 17 // Add one to account for null byte
 
+int activateSavedWindow(int index, TCHAR* filePath);
+int saveWindow(int index, TCHAR* filePath);
+
 int activateSavedWindow(int index, TCHAR* filePath) {
   if (index < 0 || index >= MAX_SAVED_WINDOWS) {
     return 1;
@@ -32,7 +35,7 @@ int activateSavedWindow(int index, TCHAR* filePath) {
     printf("Attempting to restore by handle '%s'.\n", hWndStr);
     returnCode = activateWindowByHandle(hWnd);
   }
-  if (returnCode != 0) {
+  if (returnCode == 0) {
     iniReadResult = GetPrivateProfileString(indexStr, "title", NULL, windowTitle, STRING_LEN, filePath);
     if (iniReadResult > 0) {
       printf("Attempting to restore by title.\n");

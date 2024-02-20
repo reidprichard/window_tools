@@ -22,10 +22,10 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">Window Tools</h3>
 
   <p align="center">
-    project_description
+    This project consists of two simple tools for interacting with windows. The first, window_manager, allows you to save (and later refocus) any window with a single command. The second communicates with Kanata's TCP server to set application-specific keybinds.
     <br />
     <a href="https://github.com/reidprichard/repo_name"><strong>Explore the docs »</strong></a>
     <br />
@@ -73,22 +73,10 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `reidprichard`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-### Built With
-
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+`This project consists of two simple tools for interacting with windows. The
+first, window_manager, allows you to save (and later refocus) any window with a
+single command. The second communicates with Kanata's TCP server to set
+application-specific keybinds.`
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -97,32 +85,11 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
-### Prerequisites
-
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/reidprichard/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+1. Download the project executables from the latest release.
+2. Run via the command line.
+3. That's it! No config file needed.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -131,9 +98,71 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+### kanata_helper_daemon
+To get started, all you need to do is run:
+`.../path/to/kanata_helper_daemon.exe --port=<kanata-port-number>`
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+For example, if you had launched Kanata with:
+`kanata.exe -p 1337`
+
+You would run:
+`.../path/to/kanata_helper_daemon.exe --port=1337`
+
+When you switch your application focus, kanata_helper_daemon will send a message to Kanata telling it to switch layers.
+The requested layer name is the name of the window's process. For example, if you opened Firefox, kanata_helper_daemon
+would attempt to switch to the layer named "firefox". If you're not sure what a window's process name is, take a look
+at kanata_helper_daemon's console output. Note that layer names are case-sensitive.
+
+For full functionality, you'll want to point kanata_helper_daemon to your Kanata config file, like so: . 
+<pre>
+`.../path/to/kanata_helper_daemon.exe --port=1337 <b>--config-file=.../path/to/config/file.kbd</b>`
+</pre>
+The daemon will parse your config file to gather a list of all your layer names. If a process
+name does not match one of your layer names, it will return to the layer named "default".
+If you don't have a layer named "default", or you just want to use a different layer for this,
+you can specify the name like so:
+<pre>
+`.../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd <b>--default-layer=my-default-layer</b>`
+</pre>
+
+You will likely want to run this daemon in the background so that you don't need to keep a
+console window open. To do so, you can use the following syntax in PowerShell:
+<pre>
+`<b>Start-Process</b> .../path/to/kanata_helper_daemon.exe --port=1337 --config-file=.../path/to/config/file.kbd --default-layer=my-default-layer <b>-WindowStyle Hidden</b>`
+</pre>
+
+If you wish to kill this background process, you can do so (again in PowerShell) with:
+`Stop-Process -Name kanata_helper_daemon`
+
+### window_manager
+
+This tool allows you to programatically activate specific windows. Do you often find yourself
+searching through a million icons on your taskbar to find that one browser window? This is the
+tool for you.
+
+Usage is relatively straightforward. The command:
+`/path/to/window_manager.exe --save-window=0`
+saves the currently-focused window to index 0, and:
+`/path/to/window_manager.exe --load-window=0`
+will later bring that window to the front and focus it. The window's index can be
+any number from 0-999. 
+
+Saved windows are stored in a .ini file. By default, this will be "saved_windows-<computer-name>.ini".
+If you wish to change this file, you can do so with the `--path` argument:
+<pre>
+`/path/to/window_manager.exe <b>--path=.../path/to/your/file.ini</b> --save-window=0`
+</pre>
+
+Both window title and handle (basically, a number that is a unique identifier for that particular window) are stored. 
+This allows window_manager to activate a window after it has been closed and reopened (handle changed,
+but title hopefully remained the same) or if the window title changes (e.g. you change tabs in your browser).
+Since this utility is run on-demand, and there is no background daemon, it is limited in what it can
+do to keep track of your windows. Each time you activate a window it will update the saved handle and title,
+but if a window's handle _and_ title change between activations window_manager won't know where to find the
+window.
+
+Obviously, running this utility directly from the terminal isn't very useful. It is intended
+to be bound to your keyboard. You can see a Kanata configuration that does this in `examples`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -142,10 +171,9 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Add system tray icon for kanata_helper_daemon background execution
+- [ ] Hook kanata_helper_daemon to Win32 events rather than continually looping
+- [ ] Add background service for window_manager to update handles and titles as they change. This could be handled by kanata_helper_daemon.
 
 See the [open issues](https://github.com/reidprichard/repo_name/issues) for a full list of proposed features (and known issues).
 
@@ -174,7 +202,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the GNU General Public License v3.0 or later. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -183,20 +211,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
 Project Link: [https://github.com/reidprichard/repo_name](https://github.com/github_username/repo_name)
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

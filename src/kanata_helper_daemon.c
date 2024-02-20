@@ -1,4 +1,4 @@
-/*! file kanata_client.c
+/*! file kanata_helper_daemon.c
  * \brief A simple Windows daemon that enables application-specific keybinds in Kanata.
  *
  *  This program monitors the active window and correspondingly requests layer
@@ -8,7 +8,8 @@
  *  For example, if you activated your Firefox window, it would send the
  *  following message to Kanata: {"ChangeLayer":{"new":"firefox"}. Process
  *  names are not always obvious, but when this program is running it will
- *  print the active window's process name to the console.
+ *  print the active window's process name to the console. Spaces in process
+ *  names will be replaced with underscores.
  *  By default, it attempts to connect to Kanata at localhost:80, but the host
  *  and port can both be changed using command line arguments.
  *  If the users's .kbd config file is specified, all layer names will be
@@ -32,7 +33,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#include "kanata_client.h"
+#include "kanata_helper_daemon.h"
 #include "lib/utils.h"
 
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
@@ -240,7 +241,13 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   const TCHAR *activeLayerName;
   while (TRUE) {
     // If the title of the active window changes
+    // TODO: If I'm not going to do anything with the window title, need this to just use the process name.
     if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
+      for (int i = 0; i<strlen(procName); ++i) {
+        if (procName[i]==' ') {
+          procName[i] = '_';
+        }
+      }
       printf("New window activated: hWnd='%p',\tTitle='%s',\tProcess='%s'\n", fg, winTitle, procName);
 
       // If the window process (minus .exe) is in the list of layer names,

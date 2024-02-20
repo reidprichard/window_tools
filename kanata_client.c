@@ -16,44 +16,41 @@
 #define MAX_CONFIG_FILE_LINE_LENGTH 256
 #define BUFFER_LEN 256
 
-const TCHAR* configFilePath = "../murphpad_kanata.kbd";
-const TCHAR* layerStartStr = "(deflayer ";
-TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
-int layerCount = 0;
-const TCHAR* hostname = "localhost";
-const TCHAR* port = "1337";
+// TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
+// int layerCount = 0;
 
-int getLayerNames(const TCHAR* configPath) {
-  FILE *fptr;
-  fopen_s(&fptr, configPath, "r");
-  TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
-  int layerNum = 0;
-  while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
-    TCHAR* pos = strstr(buf, layerStartStr);
-    // Check that:
-    // 1: layerStartStr is found
-    // 2. The line continues past layerStartStr (add 1 to account for newline)
-    if (pos && strlen(buf) > strlen(layerStartStr) + 1) {
-      int layerNameLength = strlen(buf) - strlen(layerStartStr);
-      for (int charIndex = 0; charIndex < min(layerNameLength, MAX_LAYER_NAME_LENGTH); ++charIndex) {
-        layerNames[layerNum][charIndex] = buf[strlen(layerStartStr)+charIndex];
-      }
-      layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
-      ++layerNum;
-    }
-  }
-  layerCount = layerNum;
-  while (layerNum < MAX_LAYERS) {
-    layerNames[layerNum][0] = '\0';
-    ++layerNum;
-  }
-  printf("%d layers found\n", layerCount);
-  for (int i = 0; i < layerCount; ++i) {
-    printf("Layer %d: %s\n", i, layerNames[i]);
-  }
-
-  return 0;
-}
+// int getLayerNames(const TCHAR* configPath) {
+//   const TCHAR* layerStartStr = "(deflayer ";
+//   FILE *fptr;
+//   fopen_s(&fptr, configPath, "r");
+//   TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
+//   int layerNum = 0;
+//   while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
+//     TCHAR* pos = strstr(buf, layerStartStr);
+//     // Check that:
+//     // 1: layerStartStr is found
+//     // 2. The line continues past layerStartStr (add 1 to account for newline)
+//     if (pos && strlen(buf) > strlen(layerStartStr) + 1) {
+//       int layerNameLength = strlen(buf) - strlen(layerStartStr);
+//       for (int charIndex = 0; charIndex < min(layerNameLength, MAX_LAYER_NAME_LENGTH); ++charIndex) {
+//         layerNames[layerNum][charIndex] = buf[strlen(layerStartStr)+charIndex];
+//       }
+//       layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
+//       ++layerNum;
+//     }
+//   }
+//   layerCount = layerNum;
+//   while (layerNum < MAX_LAYERS) {
+//     layerNames[layerNum][0] = '\0';
+//     ++layerNum;
+//   }
+//   printf("%d layers found\n", layerCount);
+//   for (int i = 0; i < layerCount; ++i) {
+//     printf("Layer %d: %s\n", i, layerNames[i]);
+//   }
+//
+//   return 0;
+// }
 
 int initTcp(const TCHAR* host, const TCHAR* port, SOCKET* ConnectSocket) {
   int iResult;
@@ -137,7 +134,7 @@ int sendTCP(SOCKET sock, TCHAR* msg) {
 const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 
-void loop() {
+void loop(TCHAR* hostname, TCHAR* port) {
   SOCKET kanataSocket;
   int iResult = initTcp(hostname, port, &kanataSocket);
   if (iResult == SOCKET_ERROR) {
@@ -168,8 +165,27 @@ void loop() {
 }
 
 int main(int argc, TCHAR *argv[]) {
+  TCHAR hostname[BUFFER_LEN] = "localhost";
+  TCHAR port[BUFFER_LEN] = "80";
+  for (int i=min(1,argc); i<argc; ++i) {
+    if (strchr(argv[i], '-') != argv[i]) {
+      printf("ERROR: Invalid syntax.\n");
+      return 1;
+    }
+    else if (strstr(argv[i], "--hostname=")==argv[i]) {
+      sscanf_s(argv[i], "--path=%s", hostname);
+    }
+    else if (strstr(argv[i], "--port=")==argv[i]) {
+      sscanf_s(argv[i], "--path=%s", port);
+    }
+    else {
+      printf("Invalid argument.\n");
+      return 1;
+    }
+
+  }
   printf("Starting...\n");
-  getLayerNames("../murphpad_kanata.kbd");
-  loop();
+  // getLayerNames("../murphpad_kanata.kbd");
+  loop(hostname, port);
   return 0;
 }

@@ -107,6 +107,10 @@ int main(int argc, TCHAR *argv[]) {
     else if (strstr(argv[i], "--save-window=")==argv[i]) {
       sscanf_s(argv[i], "--save-window=%d", &saveIndex);
     }
+    else {
+      printf("Invalid argument.\n");
+      return 1;
+    }
   }
 
   if (iniFilePath[0] == 0) {

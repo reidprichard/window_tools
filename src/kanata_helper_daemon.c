@@ -35,7 +35,13 @@
 
 #include "kanata_helper_daemon.h"
 #include "utils.h"
+#ifdef CMAKE
 #include "window_tools.h"
+#else
+#define window_tools_VERSION_MAJOR 0
+#define window_tools_VERSION_MINOR 0
+#define window_tools_VERSION_PATCH 0
+#endif
 
 // Needs to be linked to Ws2_32. With mingw64, it's as simple as adding -lWs2_32
 // to the compile command. CMake should handle it automatically with the following.

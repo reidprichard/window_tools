@@ -11,7 +11,14 @@
 
 #include "utils.h"
 #include "window_manager.h"
+
+#ifdef CMAKE
 #include "window_tools.h"
+#else
+#define window_tools_VERSION_MAJOR 0
+#define window_tools_VERSION_MINOR 0
+#define window_tools_VERSION_PATCH 0
+#endif
 
 #define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
 #define STRING_LEN 256        // Probably should differentiate different strings ¯\_(ツ)_/¯

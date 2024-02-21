@@ -10,6 +10,7 @@ project(window_tools VERSION 0.1.2)
 # created in the build directory. Copy it to the root
 # directory to make clangd happy.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) 
+add_compile_definitions(CMAKE)
 configure_file(src/window_tools.h.in window_tools.h)
 add_executable(window_manager src/window_manager.c src/utils.c)
 add_executable(kanata_helper_daemon src/kanata_helper_daemon.c src/utils.c)

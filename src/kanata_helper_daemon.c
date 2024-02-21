@@ -34,7 +34,7 @@
 #include <ws2tcpip.h>
 
 #include "kanata_helper_daemon.h"
-#include "lib/utils.h"
+#include "utils.h"
 
 // Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
 // to the compile command
@@ -317,13 +317,13 @@ int main(int argc, TCHAR *argv[]) {
       printf("%s\n", helpMessage);
       return 0;
     } else if (strstr(argv[i], "--config-file=") == argv[i]) {
-      sscanf_s(argv[i], "--config-file=%s", configFileName);
+      sscanf_s(argv[i], "--config-file=%s", configFileName, (unsigned) sizeof(configFileName));
     } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
-      sscanf_s(argv[i], "--default-layer=%s", defaultLayer);
+      sscanf_s(argv[i], "--default-layer=%s", defaultLayer, (unsigned) sizeof(defaultLayer));
     } else if (strstr(argv[i], "--hostname=") == argv[i]) {
-      sscanf_s(argv[i], "--hostname=%s", hostname);
+      sscanf_s(argv[i], "--hostname=%s", hostname, (unsigned) sizeof(hostname));
     } else if (strstr(argv[i], "--port=") == argv[i]) {
-      sscanf_s(argv[i], "--port=%s", portNumber);
+      sscanf_s(argv[i], "--port=%s", portNumber, (unsigned) sizeof(portNumber));
     } else if (strcmp(argv[i], "-c") == 0) {
       ++i;
       if (i < argc) {

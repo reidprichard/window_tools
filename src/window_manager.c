@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #include "window_manager.h"
-#include "lib/utils.h"
+#include "utils.h"
 
 #define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
 #define STRING_LEN 256 // Probably should differentiate different strings ¯\_(ツ)_/¯
@@ -96,7 +96,7 @@ int main(int argc, TCHAR *argv[]) {
       printf("ERROR: Invalid syntax.\n");
       return 1;
     } else if (strstr(argv[i], "--path=") == argv[i]) {
-      sscanf_s(argv[i], "--path=%s", iniFilePath);
+      sscanf_s(argv[i], "--path=%s", iniFilePath, (unsigned) sizeof(iniFilePath));
     } else if (strstr(argv[i], "--get-current-window") == argv[i]) {
       printf("Current window: %p\n", GetForegroundWindow());
     } else if (strstr(argv[i], "--activate-window=") == argv[i]) {

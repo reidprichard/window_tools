@@ -255,8 +255,9 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
       printf("New window activated: hWnd='%p',\tTitle='%s',\tProcess='%s'\n", fg, winTitle, procName);
 
       // If the window process (minus .exe) is in the list of layer names,
+      // or if layerCount is 0 (indicating --config-file wasn't specified),
       // activate that layer, otherwise activate baseLayer
-      if (checkLayer(procName)) {
+      if (layerCount==0 || checkLayer(procName)) {
         activeLayerName = procName;
       } else {
         activeLayerName = baseLayer;

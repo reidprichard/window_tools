@@ -257,7 +257,7 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
       // If the window process (minus .exe) is in the list of layer names,
       // or if layerCount is 0 (indicating --config-file wasn't specified),
       // activate that layer, otherwise activate baseLayer
-      if (layerCount==0 || checkLayer(procName)) {
+      if (layerCount == 0 || checkLayer(procName)) {
         activeLayerName = procName;
       } else {
         activeLayerName = baseLayer;
@@ -281,7 +281,7 @@ int main(int argc, TCHAR *argv[]) {
   TCHAR hostname[BUFFER_LEN] = "localhost";
   // The port of Kanata's TCP server. You may want to put Kanata on something
   // more obscure than 80.
-  TCHAR port[BUFFER_LEN] = "80";
+  TCHAR portNumber[BUFFER_LEN] = "80";
   TCHAR configFileName[MAX_PATH];
   configFileName[0] = '\0';
 
@@ -292,19 +292,24 @@ int main(int argc, TCHAR *argv[]) {
 
   const TCHAR *helpMessage = "Usage:\n"
                              "  ./kanata_client.exe [options]\tStart daemon\n"
+                             "\n"
                              "Options:\n"
-                             "  --config-file=<path>               The path to your Kanata .kbd config file.\n"
-                             "If your configuration is not a single file\n"
-                             "(i.e., you use 'include'), the included files\n"
-                             "will not be parsed.\n"
-                             "  --default-layer=<layer name>       The name of your base layer in Kanata. If a\n"
-                             "                                     program does not match one of your layer names,\n"
-                             "                                     this layer will be used. You must also specify\n"
-                             "                                     --config-file. (default: 'default')\n"
-                             "  --hostname=<hostname>              The hostname Kanata's TCP server is listening on.\n"
-                             "                                     You should not need to change this.\n"
-                             "                                     (default: 'localhost')\n"
-                             "  --port=<port number>               The port Kanata is listening on. (default: '80')\n";
+                             "  --config-file=<path>,          The path to your Kanata .kbd config file.\n"
+                             "  -c <path>                      If your configuration is not a single file\n"
+                             "                                 (i.e., you use 'include'), the included files\n"
+                             "                                 will not be parsed.\n"
+                             "\n"
+                             "  --default-layer=<layer name>,  The name of your base layer in Kanata. If a\n"
+                             "  -d <layer name>                program does not match one of your layer names,\n"
+                             "                                 this layer will be used. You must also specify\n"
+                             "                                 --config-file. (default: 'default')\n"
+                             "\n"
+                             "  --hostname=<hostname>,         The hostname Kanata's TCP server is listening on.\n"
+                             "  -H <hostname>                  You should not need to change this.\n"
+                             "                                 (default: 'localhost')\n"
+                             "\n"
+                             "  --port=<port number>,          The port Kanata is listening on. (default: '80')\n"
+                             "  -p <port number>\n";
 
   // TODO: Move to an actual argument parser
   for (int i = min(1, argc); i < argc; ++i) {
@@ -318,7 +323,39 @@ int main(int argc, TCHAR *argv[]) {
     } else if (strstr(argv[i], "--hostname=") == argv[i]) {
       sscanf_s(argv[i], "--hostname=%s", hostname);
     } else if (strstr(argv[i], "--port=") == argv[i]) {
-      sscanf_s(argv[i], "--port=%s", port);
+      sscanf_s(argv[i], "--port=%s", portNumber);
+    } else if (strcmp(argv[i], "-c") == 0) {
+      ++i;
+      if (i < argc) {
+        strcpy_s(configFileName, sizeof(configFileName), argv[i]);
+      } else {
+        printf("You must specify an argument value for '%s'\n", argv[i - 1]);
+        return 1;
+      }
+    } else if (strcmp(argv[i], "-d") == 0) {
+      ++i;
+      if (i < argc) {
+        strcpy_s(defaultLayer, sizeof(defaultLayer), argv[i]);
+      } else {
+        printf("You must specify an argument value for '%s'\n", argv[i - 1]);
+        return 1;
+      }
+    } else if (strcmp(argv[i], "-H") == 0) {
+      ++i;
+      if (i < argc) {
+        strcpy_s(hostname, sizeof(hostname), argv[i]);
+      } else {
+        printf("You must specify an argument value for '%s'\n", argv[i - 1]);
+        return 1;
+      }
+    } else if (strcmp(argv[i], "-p") == 0) {
+      ++i;
+      if (i < argc) {
+        strcpy_s(portNumber, sizeof(portNumber), argv[i]);
+      } else {
+        printf("You must specify an argument value for '%s'\n", argv[i - 1]);
+        return 1;
+      }
     } else {
       printf("ERROR: Invalid argument: '%s'. See --help for usage.\n", argv[i]);
       return 1;
@@ -328,6 +365,6 @@ int main(int argc, TCHAR *argv[]) {
   if (strlen(configFileName) > 0) {
     getLayerNames(configFileName);
   }
-  loop(hostname, port, defaultLayer);
+  loop(hostname, portNumber, defaultLayer);
   return 0;
 }

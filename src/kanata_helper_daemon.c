@@ -237,10 +237,10 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   }
 
   HWND fg;
-  TCHAR procName[maxProcNameLen];
-  TCHAR winTitle[maxWinTitleLen];
-  TCHAR prevProcName[maxProcNameLen];
-  TCHAR prevWinTitle[maxWinTitleLen];
+  TCHAR procName[sizeof(TCHAR) * BUFFER_LEN];
+  TCHAR winTitle[sizeof(TCHAR) * BUFFER_LEN];
+  TCHAR prevProcName[sizeof(TCHAR) * BUFFER_LEN];
+  TCHAR prevWinTitle[sizeof(TCHAR) * BUFFER_LEN];
   TCHAR *buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
   const TCHAR *activeLayerName;
   while (TRUE) {

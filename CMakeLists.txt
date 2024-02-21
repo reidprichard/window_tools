@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25.0)
-project(window_tools VERSION 0.1.1)
+project(window_tools VERSION 0.1.2)
 # CMAKE_EXPORT_COMPILE_COMMANDS doesn't work with MSVC; 
 # to generate compile_commands.json run with a different
 # generator. For example:

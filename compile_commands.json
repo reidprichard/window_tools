@@ -1,26 +1,26 @@
 [
 {
-  "directory": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/build",
+  "directory": "./build",
   "command": "C:\\msys64\\mingw64\\bin\\cc.exe  @CMakeFiles/window_manager.dir/includes_C.rsp  -o CMakeFiles\\window_manager.dir\\src\\window_manager.c.obj -c C:\\Users\\Reid\\ownCloud\\Personal\\Documents\\Hotkeys\\window_tools\\src\\window_manager.c",
-  "file": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/src/window_manager.c",
+  "file": "./src/window_manager.c",
   "output": "CMakeFiles/window_manager.dir/src/window_manager.c.obj"
 },
 {
-  "directory": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/build",
+  "directory": "./build",
   "command": "C:\\msys64\\mingw64\\bin\\cc.exe  @CMakeFiles/window_manager.dir/includes_C.rsp  -o CMakeFiles\\window_manager.dir\\src\\utils.c.obj -c C:\\Users\\Reid\\ownCloud\\Personal\\Documents\\Hotkeys\\window_tools\\src\\utils.c",
-  "file": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/src/utils.c",
+  "file": "./src/utils.c",
   "output": "CMakeFiles/window_manager.dir/src/utils.c.obj"
 },
 {
-  "directory": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/build",
+  "directory": "./build",
   "command": "C:\\msys64\\mingw64\\bin\\cc.exe  @CMakeFiles/kanata_helper_daemon.dir/includes_C.rsp  -o CMakeFiles\\kanata_helper_daemon.dir\\src\\kanata_helper_daemon.c.obj -c C:\\Users\\Reid\\ownCloud\\Personal\\Documents\\Hotkeys\\window_tools\\src\\kanata_helper_daemon.c",
-  "file": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/src/kanata_helper_daemon.c",
+  "file": "./src/kanata_helper_daemon.c",
   "output": "CMakeFiles/kanata_helper_daemon.dir/src/kanata_helper_daemon.c.obj"
 },
 {
-  "directory": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/build",
+  "directory": "./build",
   "command": "C:\\msys64\\mingw64\\bin\\cc.exe  @CMakeFiles/kanata_helper_daemon.dir/includes_C.rsp  -o CMakeFiles\\kanata_helper_daemon.dir\\src\\utils.c.obj -c C:\\Users\\Reid\\ownCloud\\Personal\\Documents\\Hotkeys\\window_tools\\src\\utils.c",
-  "file": "C:/Users/Reid/ownCloud/Personal/Documents/Hotkeys/window_tools/src/utils.c",
+  "file": "./src/utils.c",
   "output": "CMakeFiles/kanata_helper_daemon.dir/src/utils.c.obj"
 }
 ]

@@ -44,9 +44,13 @@
 const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 
-#define MAX_LAYERS 25                    // Kanata default max
-#define MAX_LAYER_NAME_LENGTH 64         // Seems reasonable?
-#define MAX_CONFIG_FILE_LINE_LENGTH 8192 // Seems reasonable?
+// The max number of layers in a configuration. 25 is Kanata's default max as of 2024-2-20.
+#define MAX_LAYERS 25
+// The max length of a layer name.
+#define MAX_LAYER_NAME_LENGTH 64
+// The max number of characters in a single line of the configuration file.
+#define MAX_CONFIG_FILE_LINE_LENGTH 1024
+
 // A list of layer names found in the Kanata .kbd config file. This would
 // eventually be better as a hash-based type.
 TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];

@@ -35,9 +35,10 @@
 
 #include "kanata_helper_daemon.h"
 #include "utils.h"
+#include "window_tools.h"
 
-// Needs to be linked to this. With mingw64, it's as simple as adding -lWs2_32
-// to the compile command
+// Needs to be linked to Ws2_32. With mingw64, it's as simple as adding -lWs2_32
+// to the compile command. CMake should handle it automatically with the following.
 #pragma comment(lib, "Ws2_32.lib")
 
 #define BUFFER_LEN 256
@@ -315,6 +316,10 @@ int main(int argc, TCHAR *argv[]) {
   for (int i = min(1, argc); i < argc; ++i) {
     if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
       printf("%s\n", helpMessage);
+      return 0;
+    }
+    else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
+      printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR, window_tools_VERSION_PATCH);
       return 0;
     } else if (strstr(argv[i], "--config-file=") == argv[i]) {
       sscanf_s(argv[i], "--config-file=%s", configFileName, (unsigned) sizeof(configFileName));

@@ -288,15 +288,18 @@ int main(int argc, TCHAR *argv[]) {
   const TCHAR *helpMessage =  "Usage:\n"
                         "  ./kanata_client.exe [options]\tStart daemon\n"
                         "Options:\n"
-                        "  --config-file=<path>              The path to your Kanata .kbd config file.\n"
-                        "  --default-layer=<layer name>      The name of your base layer in Kanata. If a\n"
-                        "                                    program does not match one of your layer names,\n"
-                        "                                    this layer will be used. You must also specify\n"
-                        "                                    --config-file. (default: 'default')\n"
-                        "  --hostname=<hostname>             The hostname Kanata's TCP server is listening on.\n"
-                        "                                    You should not need to change this.\n"
-                        "                                    (default: 'localhost')\n"
-                        "  --port=<port number>              The port Kanata is listening on. (default: '80')\n";
+                        "  --config-file=<path>               The path to your Kanata .kbd config file.\n"
+                                                              "If your configuration is not a single file\n"
+                                                              "(i.e., you use 'include'), the included files\n"
+                                                              "will not be parsed.\n"
+                        "  --default-layer=<layer name>       The name of your base layer in Kanata. If a\n"
+                        "                                     program does not match one of your layer names,\n"
+                        "                                     this layer will be used. You must also specify\n"
+                        "                                     --config-file. (default: 'default')\n"
+                        "  --hostname=<hostname>              The hostname Kanata's TCP server is listening on.\n"
+                        "                                     You should not need to change this.\n"
+                        "                                     (default: 'localhost')\n"
+                        "  --port=<port number>               The port Kanata is listening on. (default: '80')\n";
 
   // TODO: Move to an actual argument parser
   for (int i = min(1, argc); i < argc; ++i) {

@@ -119,6 +119,8 @@ For full functionality, you'll want to point kanata_helper_daemon to your Kanata
 </pre>
 The daemon will parse your config file to gather a list of all your layer names. If a process
 name does not match one of your layer names, it will return to the layer named "default".
+WARNING: kanata_helper_daemon currently only supports single-file configurations, so any layers defined in files
+added with [include](https://github.com/jtroo/kanata/blob/main/docs/config.adoc#include-other-files) will not be parsed.
 If you don't have a layer named "default", or you just want to use a different layer for this,
 you can specify the name like so:
 <pre>
@@ -171,6 +173,7 @@ to be bound to your keyboard. You can see a Kanata configuration that does this 
 <!-- ROADMAP -->
 ## Roadmap
 
+- [ ] Add ability to parse multi-file configurations
 - [ ] Add system tray icon for kanata_helper_daemon background execution
 - [ ] Hook kanata_helper_daemon to Win32 events rather than continually looping
 - [ ] Add background service for window_manager to update handles and titles as they change. This could be handled by kanata_helper_daemon.

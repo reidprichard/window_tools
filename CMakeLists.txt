@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.25.0)
+project(window_tools VERSION 0.1.1)
+configure_file(src/window_tools.h.in src/window_tools.h)
+add_executable(window_manager src/window_manager.c src/utils.c)
+add_executable(kanata_helper_daemon src/kanata_helper_daemon.c src/utils.c)

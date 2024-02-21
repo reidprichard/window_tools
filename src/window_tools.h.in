@@ -1,0 +1,2 @@
+#define window_tools_VERSION_MAJOR @window_tools_VERSION_MAJOR@
+#define window_tools_VERSION_MINOR @window_tools_VERSION_MINOR@

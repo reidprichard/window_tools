@@ -9,12 +9,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "window_manager.h"
 #include "utils.h"
+#include "window_manager.h"
+#include "window_tools.h"
 
 #define MAX_SAVED_WINDOWS 999 // Only exists to enforce LENGTH(MAX_SAVED_WINDOWS)
-#define STRING_LEN 256 // Probably should differentiate different strings ¯\_(ツ)_/¯
-#define HWND_LEN 17 // Add one to account for null byte
+#define STRING_LEN 256        // Probably should differentiate different strings ¯\_(ツ)_/¯
+#define HWND_LEN 17           // Add one to account for null byte
 
 // Credit: https://stackoverflow.com/a/29952494
 #define STRINGIFY(x) #x
@@ -95,8 +96,13 @@ int main(int argc, TCHAR *argv[]) {
     if (strchr(argv[i], '-') != argv[i]) {
       printf("ERROR: Invalid syntax.\n");
       return 1;
+    } else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
+      printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR,
+             window_tools_VERSION_PATCH);
+      return 0;
+
     } else if (strstr(argv[i], "--path=") == argv[i]) {
-      sscanf_s(argv[i], "--path=%s", iniFilePath, (unsigned) sizeof(iniFilePath));
+      sscanf_s(argv[i], "--path=%s", iniFilePath, (unsigned)sizeof(iniFilePath));
     } else if (strstr(argv[i], "--get-current-window") == argv[i]) {
       printf("Current window: %p\n", GetForegroundWindow());
     } else if (strstr(argv[i], "--activate-window=") == argv[i]) {

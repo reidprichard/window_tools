@@ -77,9 +77,11 @@ This project consists of two simple tools for interacting with windows. The
 first, window_manager, allows you to save (and later refocus) any window with a
 single command. The second communicates with Kanata's TCP server to set
 application-specific keybinds.
+
 This is a work in project (especially when it comes to documentation), but the
 binaries are fully-functional, and their `--help` sections should tell you all
 you need.
+
 I would love to get these tools working on Linux, but I have not had luck working
 with KDE Plasma's API.
 

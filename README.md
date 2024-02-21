@@ -77,6 +77,9 @@ This project consists of two simple tools for interacting with windows. The
 first, window_manager, allows you to save (and later refocus) any window with a
 single command. The second communicates with Kanata's TCP server to set
 application-specific keybinds.
+This is a work in project (especially when it comes to documentation), but the
+binaries are fully-functional, and their `--help` sections should tell you all
+you need.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -182,6 +185,32 @@ See the [open issues](https://github.com/reidprichard/window_tools/issues) for a
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- BUILDING -->
+## Building
+
+Building the project should be pretty straightforward. However, I'm new to Win32 development,
+so these instructions may be incomplete. Please open an issue if you have problems.
+
+1. Install the [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/).
+2. Clone the project (`git clone https://github.com/reidprichard/window_tools.git`) or [download its zip](https://github.com/reidprichard/window_tools/archive/refs/heads/main.zip).
+3. Move to the next section depending on whether you're building with CMake or GCC.
+
+### Bulding with CMake
+CMake is the easiest way to build. You may need to have a recent version of Visual Studio installed to get access to MSVC.
+1. Create a "build" folder in the project's root directory.
+2. Open a terminal in "build".
+3. Run `cmake ..`
+4. Run `cmake --build .`
+5. If all went well, project binaries should be in /build/Debug.
+
+### Building with GCC
+Alternatively, if you don't have CMake installed, you can build with GCC (tested with mingw64):
+1. Open a terminal in the project's root directory.
+2. Run `gcc ./src/kanata_helper_daemon.c ./src/utils.c -lWs2_32 -o kanata_helper_daemon.exe` to build _kanata_helper_daemon_. If you get errors along the lines of `undefined reference to '__imp_WSAStartup'`, it's not finding the Ws2_32 library. (This shouldn't be an issue if you're using mingw64.) You'll have to use your Google-Fu here.
+3. Run `gcc ./src/window_manager.c ./src/utils.c -o window_manager.exe` to build _window_manager_.
+4. If all went well, project binaries will be in the root directory.
+
+If built with a method other than CMake, `--version` will output 0.0.0.
 
 
 <!-- CONTRIBUTING -->

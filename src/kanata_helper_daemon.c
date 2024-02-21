@@ -44,9 +44,9 @@
 const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 
-#define MAX_LAYERS 25                   // Kanata default max
-#define MAX_LAYER_NAME_LENGTH 64        // Seems reasonable?
-#define MAX_CONFIG_FILE_LINE_LENGTH 256 // Seems reasonable?
+#define MAX_LAYERS 25                    // Kanata default max
+#define MAX_LAYER_NAME_LENGTH 64         // Seems reasonable?
+#define MAX_CONFIG_FILE_LINE_LENGTH 8192 // Seems reasonable?
 // A list of layer names found in the Kanata .kbd config file. This would
 // eventually be better as a hash-based type.
 TCHAR layerNames[MAX_LAYERS][MAX_LAYER_NAME_LENGTH];
@@ -243,8 +243,8 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
     // If the title of the active window changes
     // TODO: If I'm not going to do anything with the window title, need this to just use the process name.
     if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
-      for (int i = 0; i<strlen(procName); ++i) {
-        if (procName[i]==' ') {
+      for (int i = 0; i < strlen(procName); ++i) {
+        if (procName[i] == ' ') {
           procName[i] = '_';
         }
       }
@@ -285,21 +285,21 @@ int main(int argc, TCHAR *argv[]) {
   // be activated instead.
   TCHAR defaultLayer[MAX_LAYER_NAME_LENGTH] = "default";
 
-  const TCHAR *helpMessage =  "Usage:\n"
-                        "  ./kanata_client.exe [options]\tStart daemon\n"
-                        "Options:\n"
-                        "  --config-file=<path>               The path to your Kanata .kbd config file.\n"
-                                                              "If your configuration is not a single file\n"
-                                                              "(i.e., you use 'include'), the included files\n"
-                                                              "will not be parsed.\n"
-                        "  --default-layer=<layer name>       The name of your base layer in Kanata. If a\n"
-                        "                                     program does not match one of your layer names,\n"
-                        "                                     this layer will be used. You must also specify\n"
-                        "                                     --config-file. (default: 'default')\n"
-                        "  --hostname=<hostname>              The hostname Kanata's TCP server is listening on.\n"
-                        "                                     You should not need to change this.\n"
-                        "                                     (default: 'localhost')\n"
-                        "  --port=<port number>               The port Kanata is listening on. (default: '80')\n";
+  const TCHAR *helpMessage = "Usage:\n"
+                             "  ./kanata_client.exe [options]\tStart daemon\n"
+                             "Options:\n"
+                             "  --config-file=<path>               The path to your Kanata .kbd config file.\n"
+                             "If your configuration is not a single file\n"
+                             "(i.e., you use 'include'), the included files\n"
+                             "will not be parsed.\n"
+                             "  --default-layer=<layer name>       The name of your base layer in Kanata. If a\n"
+                             "                                     program does not match one of your layer names,\n"
+                             "                                     this layer will be used. You must also specify\n"
+                             "                                     --config-file. (default: 'default')\n"
+                             "  --hostname=<hostname>              The hostname Kanata's TCP server is listening on.\n"
+                             "                                     You should not need to change this.\n"
+                             "                                     (default: 'localhost')\n"
+                             "  --port=<port number>               The port Kanata is listening on. (default: '80')\n";
 
   // TODO: Move to an actual argument parser
   for (int i = min(1, argc); i < argc; ++i) {

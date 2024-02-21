@@ -80,6 +80,8 @@ application-specific keybinds.
 This is a work in project (especially when it comes to documentation), but the
 binaries are fully-functional, and their `--help` sections should tell you all
 you need.
+I would love to get these tools working on Linux, but I have not had luck working
+with KDE Plasma's API.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

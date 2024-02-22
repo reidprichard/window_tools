@@ -238,6 +238,7 @@ collaborator to make that happen.
 
 Perhaps this is doable with the Wayland 
 [protocols](https://wayland.app/protocols/kde-plasma-window-management#org_kde_plasma_window_management:request:get_window_by_uuid)?
+Or [KWayland](https://github.com/KDE/kwayland)? Way out of my league here.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

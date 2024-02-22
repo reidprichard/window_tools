@@ -225,9 +225,13 @@ entail a full rewrite. It seems that KDE Plasma's
 [API](https://api.kde.org/frameworks/index.html) doesn't provide ways to 
 get/set the focused window, but that functionality is available in KWin scripting. 
 I've previously written a KWin script to set the focused window, but I'm not
-sure about listening to the active window (for kanata_helper_daemon) or about 
-calling KWin scripts from C. [Here](https://unix.stackexchange.com/a/517690) 
+sure about listening to the active window (for _kanata_helper_daemon_) or about 
+calling KWin scripts from C. 
+
+[Here](https://unix.stackexchange.com/a/517690) 
 is how KWin scripts can be called from the command line.
+
+
 [This](https://github.com/k0kubun/xremap/blob/master/src/client/kde_client.rs) 
 looks like a good starting point, though I don't know Rust. I would appreciate
 any help here. I have no plans to implement this in Gnome, but I would love a

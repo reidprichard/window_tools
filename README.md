@@ -82,8 +82,16 @@ This is a work in project (especially when it comes to documentation), but the
 binaries are fully-functional, and their `--help` sections should tell you all
 you need.
 
-I would love to get these tools working on Linux, but I have not had luck working
-with KDE Plasma's API.
+I am actively working to get these tools working in Linux. Since they rely on
+the win32 API, this will entail a full rewrite. It seems that KDE Plasma's API
+doesn't provide ways to get/set the focused window, but that functionality is
+available in KWin scripting. I've previously written a KWin script to set the
+focused window, but I'm not sure about listening to the active window (for
+kanata_helper_daemon) or about calling KWin scripts from C. 
+[This](https://github.com/k0kubun/xremap/blob/master/src/client/kde_client.rs) 
+looks like a good starting point, though I don't know Rust. I would appreciate
+any help here. I have no plans to implement this in Gnome, but I would love a
+collaborator to make that happen.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -180,6 +188,7 @@ to be bound to your keyboard. You can see a Kanata configuration that does this 
 <!-- ROADMAP -->
 ## Roadmap
 
+- [ ] Add linux support
 - [ ] Add ability to parse multi-file configurations
 - [ ] Add system tray icon for kanata_helper_daemon background execution
 - [ ] Hook kanata_helper_daemon to Win32 events rather than continually looping

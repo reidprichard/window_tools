@@ -231,11 +231,13 @@ calling KWin scripts from C.
 [Here](https://unix.stackexchange.com/a/517690) 
 is how KWin scripts can be called from the command line.
 
-
 [This](https://github.com/k0kubun/xremap/blob/master/src/client/kde_client.rs) 
 looks like a good starting point, though I don't know Rust. I would appreciate
 any help here. I have no plans to implement this in Gnome, but I would love a
 collaborator to make that happen.
+
+Perhaps this is doable with the Wayland 
+[protocols](https://wayland.app/protocols/kde-plasma-window-management#org_kde_plasma_window_management:request:get_window_by_uuid)?
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

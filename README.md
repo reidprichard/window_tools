@@ -82,8 +82,7 @@ This is a work in project (especially when it comes to documentation), but the
 binaries are fully-functional, and their `--help` sections should tell you all
 you need.
 
-I am actively working to get these tools working in Linux. See 
-[below](https://github.com/reidprichard/window_tools#linux-implementation).
+I am actively working to get these tools working in Linux. See <a href="#linux-implementation">below</a>.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

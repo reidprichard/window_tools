@@ -28,16 +28,19 @@
 #define STRINGIFY(x) #x
 #define LENGTH(x) (sizeof(STRINGIFY(x)) - 1)
 
+#define MAX_SAVED_WINDOW_DIGITS LENGTH(MAX_SAVED_WINDOWS)
+
 // TODO: Incorporate/spin off a daemon that periodically updates saved window
 // titles and handles
 // TODO: Add documentation
+// TODO: Abstract saving/reading from ini to reduce repeated code
 
 int activateSavedWindow(int index, const TCHAR *filePath) {
-  if (index < 0 || index >= MAX_SAVED_WINDOWS) {
+  if (index < 0 || index > MAX_SAVED_WINDOWS) {
     return 1;
   }
   TCHAR windowTitle[STRING_LEN];
-  TCHAR indexStr[LENGTH(MAX_SAVED_WINDOWS)];
+  TCHAR indexStr[MAX_SAVED_WINDOW_DIGITS];
   TCHAR hWndStr[HWND_LEN];
   printf("Activating window #%d\n", index);
   sprintf(indexStr, "%d", index);
@@ -53,6 +56,12 @@ int activateSavedWindow(int index, const TCHAR *filePath) {
     sscanf_s(hWndStr, "%p", &hWnd);
     printf("Attempting to restore by handle '%s'.\n", hWndStr);
     returnCode = activateWindowByHandle(hWnd);
+    if (returnCode != 0) {
+      printf("Success.\n");
+    }
+  }
+  else {
+    printf("Couldn't read saved window %d from %s.\n", index, filePath);
   }
   // If unsuccessful, try activating by title
   if (returnCode == 0) {
@@ -61,11 +70,20 @@ int activateSavedWindow(int index, const TCHAR *filePath) {
     if (iniReadResult > 0) {
       printf("Attempting to restore by title.\n");
       returnCode = activateWindowByTitle(windowTitle);
+      if (returnCode != 0) {
+        printf("Success.\n");
+      }
+      else {
+        printf("Couldn't activate window. It may have already been active."); // TODO: Check if window being activated is already active
+      }
     }
   }
   // If the window was successfully activated, re-save it in case the title or
   // handle has changed.
-  if (returnCode == 0) {
+  if (returnCode != 0) {
+    // Wait for window to activate first. TODO: Find optimal value.
+    Sleep(10);
+    printf("Updating saved window details.\n");
     saveWindow(index, filePath);
   }
   return returnCode;
@@ -79,7 +97,7 @@ int saveWindow(int index, const TCHAR *filePath) {
   TCHAR processTitle[STRING_LEN];
   TCHAR windowTitle[STRING_LEN];
   HWND hWnd;
-  getForegroundWindowInfo(&hWnd, &processTitle[0], &windowTitle[0]);
+  getForegroundWindowInfo(&hWnd, &processTitle[0], &windowTitle[0], STRING_LEN);
   printf("Saving hWnd %p, process %s to %s\n", hWnd, processTitle, filePath);
   TCHAR indexStr[LENGTH(MAX_SAVED_WINDOWS)];
   TCHAR hWndStr[HWND_LEN];
@@ -90,10 +108,57 @@ int saveWindow(int index, const TCHAR *filePath) {
   return iResult;
 }
 
+#define MAX_SHOWN_TITLE_CHARACTERS 50
+int showSavedWindows(TCHAR *filePath) {
+  TCHAR savedWindowNumbers[MAX_SAVED_WINDOWS*(MAX_SAVED_WINDOW_DIGITS+1)]; // Add one for null byte separating entries
+  int savedWindowNumbersSize = GetPrivateProfileString(NULL, "title", NULL, savedWindowNumbers, MAX_SAVED_WINDOWS, filePath);
+
+  // Message that will be shown listing window numbers and titles
+  // Enough space for: window index, delimiter, window title, newline
+  // This is going to be very large; maybe I need to cut down on MAX_SAVED_WINDOWS?
+  TCHAR message[MAX_SAVED_WINDOWS*(MAX_SAVED_WINDOW_DIGITS+1+MAX_SHOWN_TITLE_CHARACTERS+1)];
+  // Position in `message`
+  int messagePos = 0;
+
+  // Window number extracted from `savedWindowNumbers`
+  TCHAR windowNumber[MAX_SAVED_WINDOW_DIGITS];
+  // Position in `windowNumber`
+  int winNumberPos = 0;
+
+  HWND hWnd;
+  TCHAR hWndStr[HWND_LEN];
+  while (winNumberPos < savedWindowNumbersSize) {
+    // If not the first iteration, add a newline for the new entry
+    if (winNumberPos > 0) {
+      message[messagePos] = '\n';
+      ++messagePos;
+    }
+
+    // Get next window number in `savedWindowNumbers`
+    winNumberPos += sprintf(windowNumber, "%s", &savedWindowNumbers[winNumberPos]) + 1;
+
+    // First, grab the hWnd and update the window title in case it has changed since it was saved
+    GetPrivateProfileString(windowNumber, "hWnd", NULL, &hWndStr[0], HWND_LEN, filePath);
+    sscanf_s(hWndStr, "%p", &hWnd);
+    TCHAR windowTitle[STRING_LEN];
+    GetWindowTextA(hWnd, windowTitle, STRING_LEN);
+    WritePrivateProfileString(windowNumber, "title", windowTitle, filePath);
+
+    // Write the window number
+    messagePos += sprintf(&message[messagePos], "%s: ", windowNumber);
+    // Get the title associated with `windowNumber`
+    messagePos += GetPrivateProfileString(windowNumber, "title", NULL, &message[messagePos], min(sizeof(message)-messagePos, MAX_SHOWN_TITLE_CHARACTERS), filePath);
+  }
+  MessageBox(NULL, message, "", 0);
+  return 0;
+}
+
 int main(int argc, TCHAR *argv[]) {
   TCHAR iniFilePath[MAX_PATH];
   iniFilePath[0] = 0;
   TCHAR iniFileAbsolutePath[MAX_PATH];
+
+  BOOL show = FALSE;
 
   int saveIndex = -1;
   int loadIndex = -1;
@@ -107,7 +172,8 @@ int main(int argc, TCHAR *argv[]) {
       printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR,
              window_tools_VERSION_PATCH);
       return 0;
-
+    } else if (strcmp(argv[i], "--show") == 0) {
+      show = TRUE;
     } else if (strstr(argv[i], "--path=") == argv[i]) {
       sscanf_s(argv[i], "--path=%s", iniFilePath, (unsigned)sizeof(iniFilePath));
     } else if (strstr(argv[i], "--get-current-window") == argv[i]) {
@@ -149,6 +215,9 @@ int main(int argc, TCHAR *argv[]) {
   }
   if (loadIndex >= 0) {
     activateSavedWindow(loadIndex, iniFileAbsolutePath);
+  }
+  if (show) {
+    showSavedWindows(iniFileAbsolutePath);
   }
   return 0;
 }

@@ -43,34 +43,38 @@ int activateWindowByTitle(const TCHAR *windowTitle) {
   }
 }
 
-int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle, int bufferLen) {
+int getWindowProcessName(HWND hWnd, TCHAR* processName, int bufferLen) {
   DWORD dwProcId = 0;
   int returnCode = 0;
-
-  // ** Get fg window handle **
-  *foregroundWindow = GetForegroundWindow();
   // ** Get window process name **
-  returnCode |= GetWindowThreadProcessId(*foregroundWindow, &dwProcId);
+  returnCode |= GetWindowThreadProcessId(hWnd, &dwProcId);
   HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwProcId);
   TCHAR processPath[BUFFER_LEN];
   returnCode |= GetModuleFileNameExA((HMODULE)hProc, NULL, processPath, BUFFER_LEN);
   CloseHandle(hProc);
   // ** Get part of process name after last backslash
-  // This pointer math is IFFY, hope it's right lol
   TCHAR *procStart = processPath;
   TCHAR *backslashPos = strrchr(processPath, '\\');
   if (backslashPos) {
     procStart = backslashPos + 1; // Add one to omit the slash
   }
-  TCHAR *procEnd = strstr(processPath, ".exe");
-  int end = strlen(procStart);
+  // If the process path ends in .exe, replace the '.' with null byte to ignore the ".exe"
   if (strstr(processPath, ".exe")) {
-    end -= 4; // Subtract 4 for the ".exe"
+    TCHAR* periodPos = strrchr(processPath, '.');
+    *periodPos = '\0';
   }
-  end = max(0, min(end, BUFFER_LEN - 1)); // Subtract one so there's room for the null byte
+  sprintf_s(processName, bufferLen, "%s", procStart);
+  return returnCode;
+}
 
+int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle, int bufferLen) {
+  int returnCode = 0;
+
+  // ** Get fg window handle **
+  *foregroundWindow = GetForegroundWindow();
+  // ** Get window process name **
   if (processName != NULL) {
-    sprintf_s(processName, bufferLen, "%s", procStart);
+    returnCode |= getWindowProcessName(*foregroundWindow, processName, bufferLen);
   }
   // ** Get window title **
   returnCode |= GetWindowTextA(*foregroundWindow, windowTitle, bufferLen);

@@ -35,6 +35,7 @@
 
 #include "kanata_helper_daemon.h"
 #include "utils.h"
+
 #ifdef CMAKE
 #include "window_tools.h"
 #else
@@ -253,7 +254,7 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   while (TRUE) {
     // If the title of the active window changes
     // TODO: If I'm not going to do anything with the window title, need this to just use the process name.
-    if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0]) && (strcmp(winTitle, prevWinTitle) != 0)) {
+    if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0], BUFFER_LEN) && (strcmp(winTitle, prevWinTitle) != 0)) {
       for (int i = 0; i < strlen(procName); ++i) {
         if (procName[i] == ' ') {
           procName[i] = '_';

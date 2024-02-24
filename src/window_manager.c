@@ -1,4 +1,4 @@
-// gcc window_manager.c -o window_manager.exe -g
+// gcc window_manager.c utils.c -o window_manager.exe
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -32,7 +32,7 @@
 // titles and handles
 // TODO: Add documentation
 
-int activateSavedWindow(int index, TCHAR *filePath) {
+int activateSavedWindow(int index, const TCHAR *filePath) {
   if (index < 0 || index >= MAX_SAVED_WINDOWS) {
     return 1;
   }
@@ -71,7 +71,7 @@ int activateSavedWindow(int index, TCHAR *filePath) {
   return returnCode;
 }
 
-int saveWindow(int index, TCHAR *filePath) {
+int saveWindow(int index, const TCHAR *filePath) {
   if (index < 0 || index > MAX_SAVED_WINDOWS - 1) {
     return 1;
   }

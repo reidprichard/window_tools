@@ -149,7 +149,10 @@ int showSavedWindows(TCHAR *filePath) {
     // Get the title associated with `windowNumber`
     messagePos += GetPrivateProfileString(windowNumber, "title", NULL, &message[messagePos], min(sizeof(message)-messagePos, MAX_SHOWN_TITLE_CHARACTERS), filePath);
   }
-  MessageBox(NULL, message, "", 0);
+  // MB_SYSTEMMODAL ensures the window comes to the front
+  // In theory, MB_SETFOREGROUND ensures it is focused (so it can be closed w/ spacebar or enter); this doesn't appear to be the case though
+  // TODO: Get this window to be focused on open
+  MessageBox(NULL, message, "Window Manager: Saved Windows", MB_ICONINFORMATION | MB_SYSTEMMODAL | MB_SETFOREGROUND);
   return 0;
 }
 

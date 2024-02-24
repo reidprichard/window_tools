@@ -17,7 +17,7 @@ int forceSetForegroundWindow(const HWND hWnd) {
   HWND currentActiveWindow;
   TCHAR buf1[BUFFER_LEN];
   TCHAR buf2[BUFFER_LEN];
-  getForegroundWindowInfo(&currentActiveWindow, &buf1[0], &buf2[0]);
+  getForegroundWindowInfo(&currentActiveWindow, &buf1[0], &buf2[0], BUFFER_LEN);
   if (currentActiveWindow == hWnd) {
     return 0;
   }
@@ -43,7 +43,7 @@ int activateWindowByTitle(const TCHAR *windowTitle) {
   }
 }
 
-int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle) {
+int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle, int bufferLen) {
   DWORD dwProcId = 0;
   int returnCode = 0;
 
@@ -69,11 +69,10 @@ int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *w
   }
   end = max(0, min(end, BUFFER_LEN - 1)); // Subtract one so there's room for the null byte
 
-  for (int charIndex = 0; charIndex < end; ++charIndex) {
-    processName[charIndex] = *(procStart + charIndex); // sscanf_s would probably make this way easier?
+  if (processName != NULL) {
+    sprintf_s(processName, bufferLen, "%s", procStart);
   }
-  processName[end] = '\0';
   // ** Get window title **
-  returnCode |= GetWindowTextA(*foregroundWindow, windowTitle, BUFFER_LEN);
+  returnCode |= GetWindowTextA(*foregroundWindow, windowTitle, bufferLen);
   return returnCode;
 }

@@ -32,4 +32,4 @@ int activateWindowByTitle(const TCHAR *windowTitle);
  * @param[out] windowTitle The title of the foreground window.
  * @return 0 if failed, nonzero if successful.
  */
-int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle);
+int getForegroundWindowInfo(HWND *foregroundWindow, TCHAR *processName, TCHAR *windowTitle, int bufferLen);

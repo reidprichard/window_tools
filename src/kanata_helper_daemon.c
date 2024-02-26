@@ -74,27 +74,46 @@ int layerCount = 0;
 int getLayerNames(const TCHAR *configPath) {
   // Layer definitions in the config file are assumed to start with this string.
   const TCHAR *layerStartStr = "(deflayer ";
+  const TCHAR *multiLineCommentStartStr = "#|";
+  const TCHAR *multiLineCommentEndStr = "|#";
+  BOOL multiLineComment = FALSE;
 
   // Open the config file
   FILE *fptr;
   fopen_s(&fptr, configPath, "r");
 
   // Buffer to read lines into
-  TCHAR buf[MAX_CONFIG_FILE_LINE_LENGTH];
+  TCHAR currentLineBuf[MAX_CONFIG_FILE_LINE_LENGTH];
   // Index of the current layer. Incremented each time a new layer is read.
   int layerNum = 0;
   // Read the file line line at a time
-  while (fgets(buf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
-    TCHAR *pos = strstr(buf, layerStartStr);
-    // Check that:
-    // 1: layerStartStr is found at the start of the line
-    // 2. The line continues past layerStartStr (add 1 to account for newline)
-    if (pos == buf && strlen(buf) > strlen(layerStartStr) + 1) {
-      int layerNameLength = strlen(buf) - strlen(layerStartStr) - 1;
-      strcpy_s(layerNames[layerNum], MAX_LAYER_NAME_LENGTH, buf + strlen(layerStartStr));
-      // Set the proper character to the null byte to indicate the end of the string.
-      layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
-      ++layerNum;
+  while (fgets(currentLineBuf, MAX_CONFIG_FILE_LINE_LENGTH, fptr)) {
+    TCHAR *layerStartStrPos = strstr(currentLineBuf, layerStartStr);
+    TCHAR *multiLineCommentStart = strstr(currentLineBuf, multiLineCommentStartStr);
+
+    // Check if the current line begins a multiline comment.
+    if (multiLineCommentStart != NULL) {
+      multiLineComment = TRUE;
+    }
+    // Check if the current line is in a multiline comment.
+    // This is not in an "else" block to account for a multiline comment
+    // starting and ending on the same line.
+    if (multiLineComment) {
+      TCHAR *multiLineCommentEnd = strstr(currentLineBuf, multiLineCommentEndStr);
+      if (multiLineCommentEnd != NULL) {
+        multiLineComment = FALSE;
+      }
+    } else {
+      // Check that:
+      // 1: layerStartStr is found at the start of the line
+      // 2. The line continues past layerStartStr (add 1 to account for newline)
+      if (layerStartStrPos == currentLineBuf && strlen(currentLineBuf) > strlen(layerStartStr) + 1) {
+        int layerNameLength = strlen(currentLineBuf) - strlen(layerStartStr) - 1;
+        strcpy_s(layerNames[layerNum], MAX_LAYER_NAME_LENGTH, currentLineBuf + strlen(layerStartStr));
+        // Set the proper character to the null byte to indicate the end of the string.
+        layerNames[layerNum][min(layerNameLength, MAX_LAYER_NAME_LENGTH)] = '\0';
+        ++layerNum;
+      }
     }
   }
   layerCount = layerNum;
@@ -324,18 +343,18 @@ int main(int argc, TCHAR *argv[]) {
     if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
       printf("%s\n", helpMessage);
       return 0;
-    }
-    else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
-      printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR, window_tools_VERSION_PATCH);
+    } else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
+      printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR,
+             window_tools_VERSION_PATCH);
       return 0;
     } else if (strstr(argv[i], "--config-file=") == argv[i]) {
-      sscanf_s(argv[i], "--config-file=%s", configFileName, (unsigned) sizeof(configFileName));
+      sscanf_s(argv[i], "--config-file=%s", configFileName, (unsigned)sizeof(configFileName));
     } else if (strstr(argv[i], "--default-layer=") == argv[i]) {
-      sscanf_s(argv[i], "--default-layer=%s", defaultLayer, (unsigned) sizeof(defaultLayer));
+      sscanf_s(argv[i], "--default-layer=%s", defaultLayer, (unsigned)sizeof(defaultLayer));
     } else if (strstr(argv[i], "--hostname=") == argv[i]) {
-      sscanf_s(argv[i], "--hostname=%s", hostname, (unsigned) sizeof(hostname));
+      sscanf_s(argv[i], "--hostname=%s", hostname, (unsigned)sizeof(hostname));
     } else if (strstr(argv[i], "--port=") == argv[i]) {
-      sscanf_s(argv[i], "--port=%s", portNumber, (unsigned) sizeof(portNumber));
+      sscanf_s(argv[i], "--port=%s", portNumber, (unsigned)sizeof(portNumber));
     } else if (strcmp(argv[i], "-c") == 0) {
       ++i;
       if (i < argc) {

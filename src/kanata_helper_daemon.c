@@ -52,12 +52,18 @@
 const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
 const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
 
+#define MAX_RCVD_TCP_MESSAGE_LEN 2048
+
 // The max number of layers in a configuration. 25 is Kanata's default max as of 2024-2-20.
 #define MAX_LAYERS 25
 // The max length of a layer name.
 #define MAX_LAYER_NAME_LENGTH 64
 // The max number of characters in a single line of the configuration file.
 #define MAX_CONFIG_FILE_LINE_LENGTH 1024
+
+// Credit: https://stackoverflow.com/a/29952494
+#define STRINGIFY(x) #x
+#define LENGTH(x) (sizeof(STRINGIFY(x)) - 1)
 
 // A list of layer names found in the Kanata .kbd config file. This would
 // eventually be better as a hash-based type.
@@ -202,12 +208,12 @@ int initTcp(const TCHAR *host, const TCHAR *port, SOCKET *ConnectSocket) {
     return 1;
   }
 
-  TCHAR buf[BUFFER_LEN];
-  buf[0] = '\0';
-  iResult = recv(*ConnectSocket, buf, BUFFER_LEN, 0);
+  TCHAR buf[MAX_RCVD_TCP_MESSAGE_LEN];
+  // buf[0] = '\0';
+  iResult = recv(*ConnectSocket, buf, MAX_RCVD_TCP_MESSAGE_LEN, 0);
   if (iResult > 0) {
     printf("TCP connection successful.\n");
-    // printf("'%s'\n", buf);
+    // printf("Received '%s'\n", buf);
   } else if (iResult == 0) {
     printf("Connection closed\n");
     return 1;
@@ -304,11 +310,12 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
 
 int main(int argc, TCHAR *argv[]) {
   // The hostname of the TCP server Kanata is running on. I can't imagine ever
-  // needing this to be anything but localhost.
-  TCHAR hostname[BUFFER_LEN] = "localhost";
+  // needing this to be anything but localhost. POSIX says hostnames must not
+  // exceed 255 bytes.
+  TCHAR hostname[255] = "localhost";
   // The port of Kanata's TCP server. You may want to put Kanata on something
   // more obscure than 80.
-  TCHAR portNumber[BUFFER_LEN] = "80";
+  TCHAR portNumber[LENGTH(65535)] = "80";
   TCHAR configFileName[MAX_PATH];
   configFileName[0] = '\0';
 

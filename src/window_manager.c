@@ -171,6 +171,8 @@ int main(int argc, TCHAR *argv[]) {
     if (strchr(argv[i], '-') != argv[i]) {
       printf("ERROR: Invalid syntax.\n");
       return 1;
+    } else if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0) {
+      printf("Valid args: --version | -v, --get-current-window, --activate-window=<hwnd>, --load-window=<num>, --save-window=<num>, --show, --path=<ini-path>\n");
     } else if (strcmp(argv[i], "--version") == 0 || strcmp(argv[i], "-v") == 0) {
       printf("kanata_helper_daemon version %d.%d.%d\n", window_tools_VERSION_MAJOR, window_tools_VERSION_MINOR,
              window_tools_VERSION_PATCH);

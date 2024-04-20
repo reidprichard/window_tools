@@ -1,3 +1,5 @@
+**Note: Development is paused for now as I finish up my PhD. I have a lot of plans for this as soon as I have time. If you use the project and have issues, please open an issue for me to address when I have time.**
+
 <!-- PROJECT SHIELDS -->
 <!--
 *** I'm using markdown "reference style" links for readability.

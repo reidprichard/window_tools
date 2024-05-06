@@ -48,9 +48,7 @@
 // to the compile command. CMake should handle it automatically with the following.
 #pragma comment(lib, "Ws2_32.lib")
 
-#define BUFFER_LEN 256
-const int maxWinTitleLen = sizeof(TCHAR) * BUFFER_LEN;
-const int maxProcNameLen = sizeof(TCHAR) * BUFFER_LEN;
+#define STR_BUFFER_LEN 512
 
 #define MAX_RCVD_TCP_MESSAGE_LEN 2048
 
@@ -270,16 +268,16 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
   }
 
   HWND fg;
-  TCHAR procName[sizeof(TCHAR) * BUFFER_LEN];
-  TCHAR winTitle[sizeof(TCHAR) * BUFFER_LEN];
-  TCHAR prevProcName[sizeof(TCHAR) * BUFFER_LEN];
-  TCHAR prevWinTitle[sizeof(TCHAR) * BUFFER_LEN];
+  TCHAR procName[STR_BUFFER_LEN];
+  TCHAR winTitle[STR_BUFFER_LEN];
+  TCHAR prevProcName[STR_BUFFER_LEN];
+  TCHAR prevWinTitle[STR_BUFFER_LEN];
   TCHAR *buf = malloc(MAX_LAYER_NAME_LENGTH + strlen(LAYER_CHANGE_TEMPLATE));
   const TCHAR *activeLayerName;
   while (TRUE) {
     // If the title of the active window changes
     // TODO: If I'm not going to do anything with the window title, need this to just use the process name.
-    if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0], BUFFER_LEN) && (strcmp(winTitle, prevWinTitle) != 0)) {
+    if (getForegroundWindowInfo(&fg, &procName[0], &winTitle[0], STR_BUFFER_LEN) && (strcmp(winTitle, prevWinTitle) != 0)) {
       for (int i = 0; i < strlen(procName); ++i) {
         if (procName[i] == ' ') {
           procName[i] = '_';
@@ -301,7 +299,7 @@ void loop(const TCHAR *hostname, const TCHAR *port, const TCHAR *baseLayer) {
         printf("Socket error. Attempting to reconnect.\n");
         initTcp(hostname, port, &kanataSocket);
       }
-      strcpy_s(prevWinTitle, maxWinTitleLen, winTitle);
+      strcpy_s(prevWinTitle, STR_BUFFER_LEN, winTitle);
     }
     Sleep(10);
   }
